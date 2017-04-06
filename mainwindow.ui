@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Start Server</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="debugLog">
@@ -81,6 +81,19 @@
     </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>10</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start Client</string>
     </property>
    </widget>
   </widget>

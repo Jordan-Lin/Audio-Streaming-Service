@@ -6,6 +6,7 @@
 #include "songstreamer.h"
 #include "utilities.h"
 #include <thread>
+#include <QFileDialog>
 
 MainWindow *MainWindow::instance = nullptr;
 
@@ -34,12 +35,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    std::thread receiver(&SongStreamReceiver::init, &receiver);
-    receiver.detach();
-    std::thread sender(&SongStreamer::initStream, &sender, "C:\\Users\\Brody McCrone\\Desktop\\big.txt");
+    QString fileName = QFileDialog::getOpenFileName();
+    std::thread sender(&SongStreamer::initStream, &sender, fileName);
     sender.detach();
-    //receiver.init();
-    //sender.initStream("C:\\Users\\Brody McCrone\\Desktop\\test.txt");
 }
 
 void MainWindow::printToDebugLog(QString msg) {
@@ -82,4 +80,10 @@ void MainWindow::on_pushButton_2_clicked()
     } else {
         ui->compRes->setText("fail");
     }
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    std::thread receiver(&SongStreamReceiver::init, &receiver);
+    receiver.detach();
 }

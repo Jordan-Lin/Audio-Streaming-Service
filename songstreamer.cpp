@@ -2,16 +2,32 @@
 #include <string.h>
 #include <QDebug>
 #include "mainwindow.h"
+#include <QFile>
+#include <ws2tcpip.h>
 
 SongStreamer::SongStreamer() {
     sock = createSocket(SOCK_DGRAM);
+    bindSocket(sock, createAddress(htonl(INADDR_ANY), 0));
     addr = createAddress(inet_addr("127.0.0.1"), htons(5150));
+
+    joinMulticast(sock);
+    traverseMultiple(sock);
+    disableLoopback(sock);
 }
 
-void SongStreamer::initStream(std::string fileName) {
+void SongStreamer::initStream(QString fileName) {
     songSent = CreateEvent(NULL, FALSE, FALSE, NULL);
-    std::ifstream file(fileName, std::ios::binary);
-    totalBytes = 0;
+    /*
+    std::ifstream file("medium.txt", std::ios::binary);
+    file.open("medium.txt", std::ios::binary);
+    if (file.is_open()) {
+        MainWindow::get()->logd("FILE IS OPEN");
+    } else {
+        MainWindow::get()->logd(QString("FILE IS NOT OPEN: "));
+        printError("error: ", errno);
+    }
+
+
     buffer.resize(0);
     while (true) {
         buffer.resize(buffer.size() + AUDIO_BUFFER_SIZE);
@@ -22,7 +38,17 @@ void SongStreamer::initStream(std::string fileName) {
             totalBytes += AUDIO_BUFFER_SIZE;
         }
     }
-    MainWindow::get()->logd(QString("total bytes: ") + itoq(totalBytes));
+    */
+
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    if (file.isOpen()) {
+        MainWindow::get()->logd("FILE IS OPEN");
+    } else {
+        MainWindow::get()->logd(QString("FILE IS NOT OPEN"));
+    }
+    data = file.readAll();
+    totalBytes = data.size();
     bytesSent = 0;
     streamSong();
     WaitForSingleObjectEx(songSent, INFINITE, TRUE);
@@ -55,8 +81,8 @@ void SongStreamer::packetizeNextSongSection() {
     } else {
         audioPkt.len = AUDIO_BUFFER_SIZE;
     }
-    memcpy(audioPkt.buffer, buffer.data() + bytesSent, audioPkt.len);
-    MainWindow::get()->logpo(addNull(buffer.data() + bytesSent, audioPkt.len));
+    memcpy(audioPkt.buffer, data.data() + bytesSent, audioPkt.len);
+    MainWindow::get()->logpo(addNull(data.data() + bytesSent, audioPkt.len));
     //MainWindow::get()->logpo(QString("PacketStart:") + addNull(audioPkt.buffer, audioPkt.len) + ":PacketEnd");
     wsaBuf.len = sizeof(Audio);
     MainWindow::get()->logd(QString("wsaBuf.len = ") + itoq(wsaBuf.len) + ", audioPkt.len = " + itoq(audioPkt.len));

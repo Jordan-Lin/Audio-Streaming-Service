@@ -26,8 +26,7 @@ void CALLBACK SongStreamReceiver::receiveSongStreamRoutine(DWORD err, DWORD byte
         MainWindow::get()->logd("receiveSongStreamRoutine succeeded");
     }
 
-    reinterpret_cast<SongStreamReceiverOlapWrap *>(overlapped)
-        ->receiver->handleSongPkt();
+    reinterpret_cast<SongStreamReceiverOlapWrap *>(overlapped)->receiver->handleSongPkt();
 }
 
 void SongStreamReceiver::handleSongPkt() {

@@ -9,7 +9,11 @@ enum ErrorType {
     CREATE_SOCKET,
     RECEIVE,
     BIND_SOCKET,
-    SEND
+    SEND,
+    JOIN_MULTICAST,
+    TRAVERSE_MULTIPLE,
+    DISABLE_LOOPBACK,
+    SET_REUSABLE
 };
 
 typedef void (*Routine)(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
@@ -21,7 +25,9 @@ void bindSocket(SOCKET sock, struct sockaddr_in addr);
 struct sockaddr_in createAddress(u_long ip, int port);
 void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback);
 void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVERLAPPED overlapped, Routine callback);
-
+void joinMulticast(SOCKET sock);
+void traverseMultiple(SOCKET sock);
+void disableLoopback(SOCKET sock);
 QString itoq(int);
 QString addNull(const char *txt, int len);
 void handleError(int errCode, const char *msg, ErrorType err);

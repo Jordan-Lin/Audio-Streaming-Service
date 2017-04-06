@@ -7,13 +7,14 @@
 #include "utilities.h"
 #include "packets.h"
 #include <string>
+#include <QString>
 
 class SongStreamer {
 public:
     SongStreamer();
     static void CALLBACK streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags);
 
-    void SongStreamer::initStream(std::string fileName);
+    void SongStreamer::initStream(QString fileName);
     void SongStreamer::streamSong();
 private:
     void packetizeNextSongSection();
@@ -24,7 +25,7 @@ private:
     int sock;
     SongStreamerOlapWrap olapWrap;
     Audio audioPkt;
-    std::vector<char> buffer;
+    QByteArray data;
     WSABUF wsaBuf;
 
 

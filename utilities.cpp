@@ -3,6 +3,10 @@
 #include <windows.h>
 #include <sstream>
 #include "mainwindow.h"
+#include <ws2tcpip.h>
+
+
+#define TIMECAST_TTL    2
 
 void startup() {
     WSADATA wsaData;
@@ -24,6 +28,12 @@ SOCKET createSocket(int type) {
 }
 
 void bindSocket(SOCKET sock, struct sockaddr_in addr) {
+    bool flag = TRUE;
+    int ret = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&flag, sizeof(flag));
+    if (ret == SOCKET_ERROR) {
+        handleError(WSAGetLastError(), "SO_REUSEADDR", ErrorType::SET_REUSABLE);
+    }
+
     if (bind(sock, reinterpret_cast<struct sockaddr *>(&addr), sizeof(struct sockaddr_in))) {
         handleError(WSAGetLastError(), "bind", ErrorType::BIND_SOCKET);
     }
@@ -41,7 +51,6 @@ void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback)
     DWORD flags = 0;
     DWORD unusedRecvBytes = 0;
     memset(olap, 0, sizeof(WSAOVERLAPPED));
-    SongStreamReceiverOlapWrap *o = reinterpret_cast<SongStreamReceiverOlapWrap *>(olap);
     if (WSARecv(sock, &wsaBuf, 1, &unusedRecvBytes, &flags, olap, callback) == SOCKET_ERROR) {
         int err = WSAGetLastError();
         if (err != WSA_IO_PENDING) {
@@ -51,8 +60,6 @@ void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback)
 }
 
 void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVERLAPPED overlapped, Routine callback) {
-    SongStreamerOlapWrap *o = (SongStreamerOlapWrap *)(overlapped);
-
     DWORD unusedSendBytes = 0;
     memset(overlapped, 0, sizeof(WSAOVERLAPPED));
     if (WSASendTo(sock, wsaBuf, 1, &unusedSendBytes, 0, (struct sockaddr *)&addr,
@@ -63,6 +70,32 @@ void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVER
         }
     }
 
+}
+
+void joinMulticast(SOCKET sock) {
+    struct ip_mreq multicastInterface;
+    multicastInterface.imr_multiaddr.s_addr = inet_addr("234.5.6.7");
+    multicastInterface.imr_interface.s_addr = INADDR_ANY;
+    int setSockOptRet = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+        (char *)&multicastInterface, sizeof(multicastInterface));
+    if (setSockOptRet == SOCKET_ERROR) {
+        handleError(WSAGetLastError(), "setsockopt IP_ADD_MEMBERSHIP", ErrorType::JOIN_MULTICAST);
+    }
+}
+
+void traverseMultiple(SOCKET sock) {
+    u_long lTTL = TIMECAST_TTL;
+    int ret = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&lTTL, sizeof(lTTL));
+    if (ret == SOCKET_ERROR) {
+        handleError(WSAGetLastError(), "setsockopt IP_MULTICAST_TTL",  ErrorType::TRAVERSE_MULTIPLE);
+    }
+}
+
+void disableLoopback(SOCKET sock) {
+    bool flag = FALSE;
+    if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP, (char *)&flag, sizeof(flag)) == SOCKET_ERROR) {
+        handleError(WSAGetLastError(), "setsockopt IP_MULTICAST_TTL",  ErrorType::DISABLE_LOOPBACK);
+    }
 }
 
 void printError(const char *msg, int errCode) {
@@ -83,6 +116,14 @@ void handleError(int errCode, const char *msg, ErrorType err) {
     case ErrorType::RECEIVE:
         break;
     case ErrorType::BIND_SOCKET:
+        break;
+    case ErrorType::JOIN_MULTICAST:
+        break;
+    case ErrorType::TRAVERSE_MULTIPLE:
+        break;
+    case ErrorType::DISABLE_LOOPBACK:
+        break;
+    case ErrorType::SET_REUSABLE:
         break;
     }
 }
