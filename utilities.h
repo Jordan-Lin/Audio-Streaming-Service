@@ -19,10 +19,11 @@ void startup();
 SOCKET createSocket(int type);
 void bindSocket(SOCKET sock, struct sockaddr_in addr);
 struct sockaddr_in createAddress(u_long ip, int port);
-void receive(SOCKET sock, WSABUF wsaBuf, OVERLAPPED& olap, Routine callback);
-void multicast(SOCKET sock, WSABUF& wsaBuf, struct sockaddr_in& addr, OVERLAPPED& overlapped, Routine callback);
+void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback);
+void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVERLAPPED overlapped, Routine callback);
 
 QString itoq(int);
+QString addNull(const char *txt, int len);
 void handleError(int errCode, const char *msg, ErrorType err);
 
 #endif // UTILITIES_H

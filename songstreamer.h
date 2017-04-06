@@ -1,31 +1,35 @@
 #ifndef SONGSTREAMER_H
 #define SONGSTREAMER_H
 
+#include <winsock2.h>
+#include <windows.h>
 #include <vector>
 #include "utilities.h"
 #include "packets.h"
+#include <string>
 
 class SongStreamer {
 public:
-    static SongStreamer& get() {return instance;}
+    SongStreamer();
     static void CALLBACK streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags);
 
-    void SongStreamer::initStream(const char *fileName);
+    void SongStreamer::initStream(std::string fileName);
     void SongStreamer::streamSong();
 private:
-    SongStreamer();
-
-    static SongStreamer instance;
     void packetizeNextSongSection();
-
-    int sock;
+    HANDLE songSent;
     struct sockaddr_in addr;
-    OVERLAPPED olap;
-    WSABUF buf;
-    std::vector<char> buffer;
-    Audio audioPkt;
     int totalBytes;
     int bytesSent;
+    int sock;
+    SongStreamerOlapWrap olapWrap;
+    Audio audioPkt;
+    std::vector<char> buffer;
+    WSABUF wsaBuf;
+
+
+
+
 };
 
 #endif // SONGSTREAMER_H

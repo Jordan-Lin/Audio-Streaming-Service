@@ -9,14 +9,13 @@
 class SongStreamReceiver {
 public:
     SongStreamReceiver(int listenPort);
-    SongStreamReceiver() = default;
     void init();
     static void CALLBACK receiveSongStreamRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags);
     void handleSongPkt();
-    OlapWrap getOlapWrap();
 private:
+    HANDLE gotPacket;
     int sock;
-    OlapWrap olapWrap;
+    SongStreamReceiverOlapWrap olapWrap;
     WSABUF wsaBuf;
     char buffer[sizeof(Audio)];
 };

@@ -2,15 +2,16 @@
 #include <QDebug>
 #include <windows.h>
 #include <sstream>
+#include "mainwindow.h"
 
 void startup() {
     WSADATA wsaData;
     int ret = WSAStartup(0x0202, &wsaData);
     if (ret != 0) {
-        qDebug() << "WSAStartup failed with error: " << ret;
+        MainWindow::get()->logd(QString("WSAStartup failed with error: ") + itoq(ret));
         WSACleanup();
     } else {
-        qDebug() << "WSAStartup success.";
+        MainWindow::get()->logd("WSAStartup success.");
     }
 }
 
@@ -36,11 +37,12 @@ struct sockaddr_in createAddress(u_long ip, int port) {
     return addr;
 }
 
-void receive(SOCKET sock, WSABUF wsaBuf, OVERLAPPED& olap, Routine callback) {
+void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback) {
     DWORD flags = 0;
-    DWORD unusedRecvBytes;
-    memset(&olap, 0, sizeof(OVERLAPPED));
-    if (WSARecv(sock, &wsaBuf, 1, &unusedRecvBytes, &flags, &olap, callback) == SOCKET_ERROR) {
+    DWORD unusedRecvBytes = 0;
+    memset(olap, 0, sizeof(WSAOVERLAPPED));
+    SongStreamReceiverOlapWrap *o = reinterpret_cast<SongStreamReceiverOlapWrap *>(olap);
+    if (WSARecv(sock, &wsaBuf, 1, &unusedRecvBytes, &flags, olap, callback) == SOCKET_ERROR) {
         int err = WSAGetLastError();
         if (err != WSA_IO_PENDING) {
             handleError(err, "WSARecv", ErrorType::RECEIVE);
@@ -48,15 +50,19 @@ void receive(SOCKET sock, WSABUF wsaBuf, OVERLAPPED& olap, Routine callback) {
     }
 }
 
-void multicast(SOCKET sock, WSABUF& wsaBuf, struct sockaddr_in& addr, OVERLAPPED& overlapped, Routine callback) {
-    DWORD unusedSendBytes;
-    if (WSASendTo(sock, &wsaBuf, 1, &unusedSendBytes, 0, (struct sockaddr *)&addr,
-            sizeof(struct sockaddr_in), &overlapped, callback) == SOCKET_ERROR) {
+void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVERLAPPED overlapped, Routine callback) {
+    SongStreamerOlapWrap *o = (SongStreamerOlapWrap *)(overlapped);
+
+    DWORD unusedSendBytes = 0;
+    memset(overlapped, 0, sizeof(WSAOVERLAPPED));
+    if (WSASendTo(sock, wsaBuf, 1, &unusedSendBytes, 0, (struct sockaddr *)&addr,
+            sizeof(struct sockaddr_in), overlapped, callback) == SOCKET_ERROR) {
         int err = WSAGetLastError();
         if (err != WSA_IO_PENDING) {
             handleError(err, "WSASend", ErrorType::SEND);
         }
     }
+
 }
 
 void printError(const char *msg, int errCode) {
@@ -65,7 +71,7 @@ void printError(const char *msg, int errCode) {
                    NULL, errCode,
                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                    (LPWSTR)&s, 0, NULL);
-    qDebug() << msg << ": " << QString::fromWCharArray(s) << ", errCode: " << errCode;
+    MainWindow::get()->logd(QString(msg) + QString(": ") + QString::fromWCharArray(s) + QString(", errCode: ") + itoq(errCode));
     LocalFree(s);
 }
 
@@ -85,4 +91,13 @@ QString itoq(int n) {
     std::ostringstream oss;
     oss << n;
     return QString::fromStdString(oss.str());
+}
+
+QString addNull(const char *txt, int len) {
+    char *temp = (char *)malloc(len + 1);
+    strncpy(temp, txt, len + 1);
+    temp[len] = '\0';
+    QString q(temp);
+    free(temp);
+    return q;
 }

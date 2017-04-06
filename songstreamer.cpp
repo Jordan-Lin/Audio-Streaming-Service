@@ -1,17 +1,15 @@
 #include "songstreamer.h"
 #include <string.h>
 #include <QDebug>
-
-SongStreamer SongStreamer::instance;
+#include "mainwindow.h"
 
 SongStreamer::SongStreamer() {
-    startup();
     sock = createSocket(SOCK_DGRAM);
     addr = createAddress(inet_addr("127.0.0.1"), htons(5150));
-    memset(&olap, 0, sizeof(OVERLAPPED));
 }
 
-void SongStreamer::initStream(const char *fileName) {
+void SongStreamer::initStream(std::string fileName) {
+    songSent = CreateEvent(NULL, FALSE, FALSE, NULL);
     std::ifstream file(fileName, std::ios::binary);
     totalBytes = 0;
     buffer.resize(0);
@@ -24,34 +22,43 @@ void SongStreamer::initStream(const char *fileName) {
             totalBytes += AUDIO_BUFFER_SIZE;
         }
     }
+    MainWindow::get()->logd(QString("total bytes: ") + itoq(totalBytes));
     bytesSent = 0;
     streamSong();
+    WaitForSingleObjectEx(songSent, INFINITE, TRUE);
 }
 
 void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags) {
     if (err != 0) {
-        qDebug() << "streamRecvRoutine failed, error code: " << itoq(err);
+        MainWindow::get()->logd(QString("streamSongRoutine send failed, error code: ") + itoq(err));
+    } else {
+        MainWindow::get()->logd("streamSongRoutine send succeeded");
     }
 
-    SongStreamer::get().streamSong();
+    reinterpret_cast<SongStreamerOlapWrap *>(overlapped)->sender->streamSong();
 }
 
 void SongStreamer::streamSong() {
-    qDebug() << "bytesSent = " << bytesSent << ", totalBytes: " << totalBytes;
     if (bytesSent < totalBytes) {
         packetizeNextSongSection();
-        multicast(sock, buf, addr, olap, streamSongRoutine);
+        olapWrap.sender = this;
+        multicast(sock, &wsaBuf, addr, &olapWrap.olap, streamSongRoutine);
+        bytesSent += audioPkt.len;
+    } else {
+        SetEvent(songSent);
     }
 }
 
 void SongStreamer::packetizeNextSongSection() {
-    int len;
     if (totalBytes - bytesSent < AUDIO_BUFFER_SIZE) {
-        len = totalBytes - bytesSent;
+        audioPkt.len = totalBytes - bytesSent;
     } else {
-        len = AUDIO_BUFFER_SIZE;
+        audioPkt.len = AUDIO_BUFFER_SIZE;
     }
-    buf.buf = (char *)malloc(len);
-    buf.len = len;
-    bytesSent += len;
+    memcpy(audioPkt.buffer, buffer.data() + bytesSent, audioPkt.len);
+    MainWindow::get()->logpo(addNull(buffer.data() + bytesSent, audioPkt.len));
+    //MainWindow::get()->logpo(QString("PacketStart:") + addNull(audioPkt.buffer, audioPkt.len) + ":PacketEnd");
+    wsaBuf.len = sizeof(Audio);
+    MainWindow::get()->logd(QString("wsaBuf.len = ") + itoq(wsaBuf.len) + ", audioPkt.len = " + itoq(audioPkt.len));
+    wsaBuf.buf = reinterpret_cast<char *>(&audioPkt);
 }

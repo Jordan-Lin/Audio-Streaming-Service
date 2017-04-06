@@ -1,12 +1,13 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include "utilities.h"
 
-// Making a comment here ------------------------------------------------TAKE OUT
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    startup();
+    MainWindow::get();
+    MainWindow::get()->show();
 
     return a.exec();
 }
