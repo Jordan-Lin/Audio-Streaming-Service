@@ -6,13 +6,13 @@
 SongStreamReceiver::SongStreamReceiver(int listenPort) {
     sock = createSocket(SOCK_DGRAM);
     bindSocket(sock, createAddress(htonl(INADDR_ANY), htons(listenPort)));
-    joinMulticast(sock);
     wsaBuf.buf = buffer;
     wsaBuf.len = sizeof(Audio);
     gotPacket = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 void SongStreamReceiver::init() {
+    joinMulticast(sock);
     olapWrap.receiver = this;
     receive(sock, wsaBuf, &olapWrap.olap, receiveSongStreamRoutine);
     while(true) {

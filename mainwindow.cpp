@@ -67,9 +67,6 @@ void MainWindow::logpo(QString msg) {
     QMetaObject::invokeMethod(this, "printToPacketOutLog", Q_ARG(QString, msg));
 }
 
-
-
-
 void MainWindow::on_pushButton_2_clicked()
 {
     QString out = ui->packetOutLog->toPlainText();
