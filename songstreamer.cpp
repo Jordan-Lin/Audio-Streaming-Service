@@ -17,28 +17,6 @@ SongStreamer::SongStreamer() {
 
 void SongStreamer::initStream(QString fileName) {
     songSent = CreateEvent(NULL, FALSE, FALSE, NULL);
-    /*
-    std::ifstream file("medium.txt", std::ios::binary);
-    file.open("medium.txt", std::ios::binary);
-    if (file.is_open()) {
-        MainWindow::get()->logd("FILE IS OPEN");
-    } else {
-        MainWindow::get()->logd(QString("FILE IS NOT OPEN: "));
-        printError("error: ", errno);
-    }
-
-
-    buffer.resize(0);
-    while (true) {
-        buffer.resize(buffer.size() + AUDIO_BUFFER_SIZE);
-        if (!file.read(buffer.data() + totalBytes, AUDIO_BUFFER_SIZE)) {
-            totalBytes += file.gcount();
-            break;
-        } else {
-            totalBytes += AUDIO_BUFFER_SIZE;
-        }
-    }
-    */
 
     QFile file(fileName);
     file.open(QIODevice::ReadOnly);
