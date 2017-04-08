@@ -1,24 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>552</width>
+    <height>431</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QSplitter" name="splitter">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>340</y>
+      <width>521</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QWidget" name="">
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QLabel" name="L_SongName">
+        <property name="text">
+         <string>Playing:  </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="HS_SongProgress">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="L_SongTime">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>531</width>
+      <height>321</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="Main">
+     <item>
+      <layout class="QHBoxLayout" name="Upper">
+       <item>
+        <layout class="QHBoxLayout" name="Lists">
+         <item>
+          <layout class="QVBoxLayout" name="SongList">
+           <item>
+            <widget class="QLabel" name="L_SongList">
+             <property name="text">
+              <string>Song List</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListView" name="LV_SongList"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="Queue">
+           <item>
+            <widget class="QLabel" name="L_SongQueue">
+             <property name="text">
+              <string>Song Queue</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListView" name="LV_QueueList"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="UserList">
+           <item>
+            <widget class="QLabel" name="L_UserList">
+             <property name="text">
+              <string>User List</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListView" name="LV_UserList"/>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="Connection">
+         <item>
+          <layout class="QVBoxLayout" name="Input">
+           <item>
+            <widget class="QLabel" name="L_Username">
+             <property name="text">
+              <string>Username</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LE_Username"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="L_IPAddress">
+             <property name="text">
+              <string>IP Address</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LE_IPAddress"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="L_Port">
+             <property name="text">
+              <string>Port</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LE_Port"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="Buttons">
+           <item>
+            <widget class="QPushButton" name="B_Connect">
+             <property name="text">
+              <string>Connect</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="TestAddList">
+         <property name="text">
+          <string>TestAddList</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="TestRemoveList">
+         <property name="text">
+          <string>Get Selection From Song List</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="TestProgressBar">
+         <property name="text">
+          <string>Add Progress</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <zorder>LV_SongList</zorder>
+   <zorder>LV_QueueList</zorder>
+   <zorder>L_SongList</zorder>
+   <zorder>L_UserList</zorder>
+   <zorder>TestAddList</zorder>
+   <zorder>TestRemoveList</zorder>
+   <zorder>TestProgressBar</zorder>
+   <zorder>HS_SongProgress</zorder>
+   <zorder>L_SongTime</zorder>
+   <zorder>L_SongName</zorder>
+   <zorder>LV_UserList</zorder>
+   <zorder>L_SongQueue</zorder>
+   <zorder>LV_UserList</zorder>
+   <zorder>LE_IPAddress</zorder>
+   <zorder>LE_Port</zorder>
+   <zorder>B_Connect</zorder>
+   <zorder>pushButton_2</zorder>
+   <zorder>L_IPAddress</zorder>
+   <zorder>L_Port</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>552</width>
+     <height>17</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>
