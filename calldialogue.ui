@@ -55,7 +55,7 @@
         <item>
          <widget class="QLabel" name="L_CStatus">
           <property name="text">
-           <string>Connecting</string>
+           <string>Connecting...</string>
           </property>
          </widget>
         </item>

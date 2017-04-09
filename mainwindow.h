@@ -24,22 +24,27 @@ public:
 
     void updateSongList();
 
-private slots:
-    // Button clicked event
-    void on_TestAddList_clicked();
-    void on_TestRemoveList_clicked();
-    void on_TestProgressBar_clicked();
+    void showWarningMessage(QString type, QString msg);
 
+private slots:
     // Update list slots
     void updatedSList(std::vector<std::string> list);
     void updatedQList(std::vector<std::string> list);
     void updatedUList(std::vector<std::string> list);
 
+
+    // Button clicked event
     void on_B_Connect_clicked();
-
     void on_LV_SongList_doubleClicked(const QModelIndex &index);
-
     void on_B_Call_clicked();
+    void on_B_RunServer_clicked();
+    void on_B_AddItemTEST_clicked();
+
+    void on_B_Upload_clicked();
+
+    void on_B_Download_clicked();
+
+    void on_B_Request_clicked();
 
 signals:
     void updateSongVector(std::vector<std::string> list);

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>552</width>
-    <height>431</height>
+    <height>473</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,7 +127,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="LE_Username"/>
+            <widget class="QLineEdit" name="LE_Username">
+             <property name="maxLength">
+              <number>64</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="L_IPAddress">
@@ -138,16 +142,6 @@
            </item>
            <item>
             <widget class="QLineEdit" name="LE_IPAddress"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="L_Port">
-             <property name="text">
-              <string>Port</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="LE_Port"/>
            </item>
           </layout>
          </item>
@@ -192,29 +186,42 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="TestAddList">
+        <widget class="QPushButton" name="B_Request">
          <property name="text">
-          <string>TestAddList</string>
+          <string>Send Request</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="TestRemoveList">
+        <widget class="QPushButton" name="B_Download">
          <property name="text">
-          <string>Get Selection From Song List</string>
+          <string>Download</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="TestProgressBar">
+        <widget class="QPushButton" name="B_Upload">
          <property name="text">
-          <string>Add Progress</string>
+          <string>Upload</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="B_AddItemTEST">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>400</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add List Items TEST</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
