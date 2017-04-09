@@ -27,10 +27,6 @@ private:
     Audio audioPkt;
     QByteArray data;
     WSABUF wsaBuf;
-
-
-
-
 };
 
 #endif // SONGSTREAMER_H

@@ -6,6 +6,7 @@
 #include <fstream>
 class SongStreamReceiver;
 class SongStreamer;
+class Client;
 
 #define RECEIVE_BUFFER_SIZE 1024
 #define SEND_SONG_BUFFER_SIZE 1024
@@ -43,6 +44,9 @@ typedef struct {
     SongStreamer *sender;
 } SongStreamerOlapWrap;
 
-ReceiveSongStream *createReceiveSongStreamStruct();
+typedef struct {
+    WSAOVERLAPPED olap;
+    Client *client;
+}
 
 #endif // ROUTINESTRUCTS_H

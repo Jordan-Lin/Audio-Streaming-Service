@@ -29,13 +29,28 @@ SOURCES += main.cpp\
     packets.cpp \
     utilities.cpp \
     songstreamer.cpp \
-    songstreamreceiver.cpp
+    songstreamreceiver.cpp \
+    lockedmap.cpp \
+    songmanager.cpp \
+    songqueue.cpp \
+    clientmanager.cpp \
+    client.cpp \
+    song.cpp \
+    server.cpp
 
 HEADERS  += mainwindow.h \
     packets.h \
     utilities.h \
     routinestructs.h \
     songstreamer.h \
-    songstreamreceiver.h
+    songstreamreceiver.h \
+    lockedmap.h \
+    lockedqueue.h \
+    songmanager.h \
+    songqueue.h \
+    clientmanager.h \
+    client.h \
+    song.h \
+    server.h
 
 FORMS    += mainwindow.ui

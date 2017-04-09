@@ -13,7 +13,9 @@ enum ErrorType {
     JOIN_MULTICAST,
     TRAVERSE_MULTIPLE,
     DISABLE_LOOPBACK,
-    SET_REUSABLE
+    SET_REUSABLE,
+    SEND_TCP_OLAP,
+    SEND_TCP
 };
 
 typedef void (*Routine)(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
@@ -21,6 +23,7 @@ typedef void (*Routine)(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
 void printError(const char *msg, int errCode);
 void startup();
 SOCKET createSocket(int type);
+void sendTCP(SOCKET sock, const char *buffer, int len);
 void bindSocket(SOCKET sock, struct sockaddr_in addr);
 struct sockaddr_in createAddress(u_long ip, int port);
 void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback);
