@@ -1,27 +1,25 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "winsock2.h"
-#include "windows.h"
-#include "packets.h"
-
-#define BUFFER_SIZE 8192
+#include <winsock2.h>
+#include <windows.h>
+#include "routinestructs.h"
+#include "defines.h"
+#include <QString>
 
 class Client {
 public:
-    Client(SOCKET sock);
-    UserInfo& getInfo() {return info;}
-    SOCKET getSocket() {return info.userId;}
-private:
-    UserInfo info;
-    std::string buffer;
-    ClientOlap olapWrap;
-    WSABuf buf;
-    char buffer[BUFFER_SIZE];
-
-    void init();
-    static void CALLBACK receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
+    Client(QString serverIp, QString username);
+    static void receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
     void parse(int recvBytes);
+private:
+    SOCKET sock;
+    WSABUF wsaBuf;
+    ClientOlap olapWrap;
+    char buffer[BUFFER_SIZE];
+    struct sockaddr_in servAddr;
+
+    void run(QString username);
 };
 
-#endif
+#endif // CLIENT_H

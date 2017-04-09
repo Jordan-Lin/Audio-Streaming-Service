@@ -2,16 +2,16 @@
 #define CLIENTMANAGER_H
 
 #include "lockedmap.h"
-#include "client.h"
+#include "clienthandler.h"
 #include <memory>
 
-class ClientManager : public LockedMap<int, std::shared_ptr<Client>> {
+class ClientManager : public LockedMap<int, std::shared_ptr<ClientHandler>> {
 public:
-    static ClientManager& get() {return instance;};
-    void addClient(Client *client);
+    static ClientManager& get() {return instance;}
+    void addClient(ClientHandler *client);
 private:
+    static ClientManager instance;
     void broadcast(WSABUF buf);
-    static ClientManager& instance;
 };
 
 #endif // CLIENTMANAGER_H

@@ -3,36 +3,16 @@
 
 #include <winsock2.h>
 #include <windows.h>
-#include <fstream>
+
 class SongStreamReceiver;
 class SongStreamer;
+class ClientHandler;
 class Client;
 
 #define RECEIVE_BUFFER_SIZE 1024
 #define SEND_SONG_BUFFER_SIZE 1024
 
-typedef struct {
-    OVERLAPPED overlapped;
-    SOCKET sock;
-} OverlappedSocket;
 
-typedef struct {
-    OverlappedSocket overlappedSocket;
-    WSABUF buf;
-} ReceiveData;
-
-typedef struct {
-    ReceiveData receiveData;
-    char buffer[RECEIVE_BUFFER_SIZE];
-} ReceiveSongStream;
-
-typedef struct {
-    OverlappedSocket overlappedSocket;
-    struct sockaddr_in addr;
-    std::ifstream file;
-    char buffer[SEND_SONG_BUFFER_SIZE];
-    bool finished = false;
-} SendSongStream;
 
 typedef struct {
     WSAOVERLAPPED olap;
@@ -46,7 +26,12 @@ typedef struct {
 
 typedef struct {
     WSAOVERLAPPED olap;
+    ClientHandler *client;
+} ClientHandlerOlap;
+
+typedef struct {
+    WSAOVERLAPPED olap;
     Client *client;
-}
+} ClientOlap;
 
 #endif // ROUTINESTRUCTS_H

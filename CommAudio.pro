@@ -34,9 +34,10 @@ SOURCES += main.cpp\
     songmanager.cpp \
     songqueue.cpp \
     clientmanager.cpp \
-    client.cpp \
     song.cpp \
-    server.cpp
+    server.cpp \
+    clienthandler.cpp \
+    client.cpp
 
 HEADERS  += mainwindow.h \
     packets.h \
@@ -49,8 +50,10 @@ HEADERS  += mainwindow.h \
     songmanager.h \
     songqueue.h \
     clientmanager.h \
-    client.h \
     song.h \
-    server.h
+    server.h \
+    clienthandler.h \
+    client.h \
+    defines.h
 
 FORMS    += mainwindow.ui

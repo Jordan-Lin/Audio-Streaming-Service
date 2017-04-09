@@ -7,6 +7,9 @@
 #include "utilities.h"
 #include <thread>
 #include <QFileDialog>
+#include "client.h"
+#include "server.h"
+
 
 MainWindow *MainWindow::instance = nullptr;
 
@@ -19,13 +22,13 @@ MainWindow *MainWindow::get() {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    receiver(5150) {
+    ui(new Ui::MainWindow)
+    /*, receiver(5150) */ {
     ui->setupUi(this);
 
     //startup();
     //receiver = SongStreamReceiver(5150);
-    sender = SongStreamer();
+    //sender = SongStreamer();
 }
 
 MainWindow::~MainWindow()
@@ -35,9 +38,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName();
-    std::thread sender(&SongStreamer::initStream, &sender, fileName);
-    sender.detach();
+    //QString fileName = QFileDialog::getOpenFileName();
+    //std::thread sender(&SongStreamer::initStream, &sender, fileName);
+    //sender.detach();
+
+    server = new Server();
 }
 
 void MainWindow::printToDebugLog(QString msg) {
@@ -81,6 +86,8 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    std::thread receiver(&SongStreamReceiver::init, &receiver);
-    receiver.detach();
+    //std::thread receiver(&SongStreamReceiver::init, &receiver);
+    //receiver.detach();
+
+    client = new Client(QString("127.0.0.1"), QString("Brody"));
 }

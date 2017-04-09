@@ -41,7 +41,7 @@ public:
         }
         return all;
     }
-private:
+protected:
     std::mutex lock;
     std::map<Key, Val> map;
 };

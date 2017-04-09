@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "songstreamreceiver.h"
 #include "songstreamer.h"
+class Client;
+class Server;
 
 namespace Ui {
 class MainWindow;
@@ -33,8 +35,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    SongStreamReceiver receiver;
-    SongStreamer sender;
+    Server *server;
+    Client *client;
+    //SongStreamReceiver receiver;
+    //SongStreamer sender;
 };
 
 #endif // MAINWINDOW_H

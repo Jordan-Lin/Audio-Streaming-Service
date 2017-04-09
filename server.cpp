@@ -1,18 +1,20 @@
 #include "server.h"
-#include "client.h"
+#include "clienthandler.h"
 #include "clientmanager.h"
 #include <thread>
+#include "utilities.h"
 
 Server::Server() {
-    std::thread(this, &Server::run);
+    std::thread serverThread(&Server::run, this);
+    serverThread.detach();
 }
 
-void run() {
+void Server::run() {
     listenSock = createSocket(SOCK_STREAM);
-    bindSocket(listenSock, htonl(INADDR_ANY), htons(TCP_PORT));
-    listen(sock, 5);
+    bindSocket(listenSock, createAddress(htonl(INADDR_ANY), htons(REQUEST_PORT)));
+    listen(listenSock, 5);
 
     for(;;) {
-        Client *client = new Client(acceptConnection(listenSock));
+        ClientHandler *client = new ClientHandler(acceptConnection(listenSock));
     }
 }

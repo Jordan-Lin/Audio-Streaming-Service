@@ -27,16 +27,32 @@ SOCKET createSocket(int type) {
     return sock;
 }
 
+SOCKET acceptConnection(SOCKET sock) {
+    SOCKET acceptSock = WSAAccept(sock, NULL, NULL, NULL, NULL);
+    if (acceptSock == INVALID_SOCKET) {
+        handleError(WSAGetLastError(), "acceptConnection, WSAAccept", ErrorType::ACCEPT_CONNECTION);
+    }
+    return acceptSock;
+}
+
+bool connectSocket(SOCKET sock, struct sockaddr_in addr) {
+    if (connect(sock, (sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0) {
+        handleError(WSAGetLastError(), "connectSocket, connect", ErrorType::CONNECT_SOCKET);
+        return false;
+    }
+    return true;
+}
+
 void sendTCP(SOCKET sock, WSABUF buf, LPWSAOVERLAPPED olap, Routine callback) {
     DWORD unusedBytesSent = 0;
-    if (WSASend(sock, buf, 1, &unusedBytesSent, 0, olap, callback)) {
+    if (WSASend(sock, &buf, 1, &unusedBytesSent, 0, olap, callback)) {
         handleError(WSAGetLastError(), "WSASend", ErrorType::SEND_TCP_OLAP);
     }
 }
 
-void sendTCP(SOCKET sock, WSABUF buf) {
+void sendTCP(SOCKET sock, WSABUF& buf) {
     DWORD unusedBytesSent = 0;
-    if (WSASend(sock, buf, 1, &unusedBytesSent, 0, NULL, NULL)) {
+    if (WSASend(sock, &buf, 1, &unusedBytesSent, 0, NULL, NULL)) {
         handleError(WSAGetLastError(), "WSASend", ErrorType::SEND_TCP);
     }
 }
@@ -142,6 +158,10 @@ void handleError(int errCode, const char *msg, ErrorType err) {
     case ErrorType::SEND_TCP:
         break;
     case ErrorType::SEND_TCP_OLAP:
+        break;
+    case ErrorType::ACCEPT_CONNECTION:
+        break;
+    case ErrorType::CONNECT_SOCKET:
         break;
     }
 }
