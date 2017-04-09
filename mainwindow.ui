@@ -19,14 +19,14 @@
      <rect>
       <x>10</x>
       <y>340</y>
-      <width>521</width>
+      <width>531</width>
       <height>41</height>
      </rect>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <widget class="QLabel" name="L_SongName">
@@ -50,7 +50,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -103,6 +103,13 @@
            </item>
            <item>
             <widget class="QListView" name="LV_UserList"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="B_Call">
+             <property name="text">
+              <string>Call</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -166,6 +173,16 @@
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QPushButton" name="B_RunServer">
+             <property name="text">
+              <string>Run As Server</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_2"/>
+           </item>
           </layout>
          </item>
         </layout>
@@ -199,25 +216,6 @@
      </item>
     </layout>
    </widget>
-   <zorder>LV_SongList</zorder>
-   <zorder>LV_QueueList</zorder>
-   <zorder>L_SongList</zorder>
-   <zorder>L_UserList</zorder>
-   <zorder>TestAddList</zorder>
-   <zorder>TestRemoveList</zorder>
-   <zorder>TestProgressBar</zorder>
-   <zorder>HS_SongProgress</zorder>
-   <zorder>L_SongTime</zorder>
-   <zorder>L_SongName</zorder>
-   <zorder>LV_UserList</zorder>
-   <zorder>L_SongQueue</zorder>
-   <zorder>LV_UserList</zorder>
-   <zorder>LE_IPAddress</zorder>
-   <zorder>LE_Port</zorder>
-   <zorder>B_Connect</zorder>
-   <zorder>pushButton_2</zorder>
-   <zorder>L_IPAddress</zorder>
-   <zorder>L_Port</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

@@ -1,7 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "calldialogue.h"
 #include <QMainWindow>
+#include <QDialog>
 #include <QStringList>
 #include <QStringListModel>
 #include <QListView>
@@ -37,6 +39,8 @@ private slots:
 
     void on_LV_SongList_doubleClicked(const QModelIndex &index);
 
+    void on_B_Call_clicked();
+
 signals:
     void updateSongVector(std::vector<std::string> list);
     void updateQueueVector(std::vector<std::string> list);
@@ -57,6 +61,9 @@ private:
     QStringListModel *QList;
     QStringList userList;
     QStringListModel *UList;
+
+    // Call Dialogue Object
+//    CallDialogue *callDialogue;
 };
 
 #endif // MAINWINDOW_H

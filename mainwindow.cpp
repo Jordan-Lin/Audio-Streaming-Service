@@ -3,6 +3,8 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include <QT>
 #include <QDebug>
 #include <ws2tcpip.h>
 #include <string>
@@ -13,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setFixedSize(this->size());
 
     // Remove editing lists manually
     ui->LV_SongList->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -54,7 +57,8 @@ void MainWindow::on_TestAddList_clicked()
 
 void MainWindow::on_TestRemoveList_clicked()
 {
-
+    queueVector.push_back("Song");
+    emit updateQueueVector(queueVector);
 }
 
 void MainWindow::on_TestProgressBar_clicked()
@@ -108,5 +112,28 @@ void MainWindow::on_B_Connect_clicked()
 
 void MainWindow::on_LV_SongList_doubleClicked(const QModelIndex &index)
 {
-    std::string songSelect= index.data(Qt::DisplayRole).toString().toStdString();
+    std::string songSelect = index.data(Qt::DisplayRole).toString().toStdString();
+    int song = index.row();
+    // Grab song from map using the row, get the song information to place a request.
+    // Send Song request
+    // Wait for update received from server to add queue'd song to list.
+}
+
+void MainWindow::on_B_Call_clicked()
+{
+    int userSelect;
+    if((userSelect = ui->LV_UserList->currentIndex().row()) == -1) {
+        return;
+    }
+    QModelIndex t = ui->LV_UserList->currentIndex();
+    std::string uName = t.data(0).toString().toStdString();
+    // TODO: get the information from the index selected of the Map or vector or list to get user information.
+
+    // Get user list from map of name and struct.
+    qDebug() << "selected = " << userSelect;
+
+    CallDialogue::get()->show();
+    CallDialogue::get()->setContact(uName);
+    CallDialogue::get()->init();
+//    CallDialogue::get()->print(CallDialogue::get()->getContact());
 }

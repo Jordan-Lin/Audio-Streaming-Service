@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.2.1, 2017-04-05T19:25:12. -->
+<!-- Written by QtCreator 4.2.1, 2017-04-07T19:33:18. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -1027,7 +1027,7 @@
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">CommAudio.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default"></value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">C:/Users/Jordan/Documents/build-CommAudio-Desktop_Qt_5_7_1_MSVC2015_64bit-Debug</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
