@@ -21,6 +21,7 @@ private:
 
     void init();
     static void CALLBACK receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
+    void handleReceive(int recvBytes);
     void parse(int recvBytes);
 };
 

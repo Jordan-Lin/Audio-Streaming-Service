@@ -5,6 +5,8 @@
 #include <memory>
 #include "mainwindow.h"
 #include "clientmanager.h"
+#include "songmanager.h"
+#include "songqueue.h"
 
 ClientHandler::ClientHandler(SOCKET sock) {
     info.userId = sock;
@@ -28,7 +30,16 @@ void CALLBACK ClientHandler::receiveRoutine(DWORD errCode, DWORD recvBytes, LPOV
     }
 
     ClientHandler *client = reinterpret_cast<ClientHandlerOlap *>(olap)->client;
-    client->parse(recvBytes);
+    client->handleReceive(recvBytes);
+}
+
+void ClientHandler::handleReceive(int recvBytes) {
+    if (recvBytes == 0) {
+        MainWindow::get()->logd(QString("Client disconnected: ") + QString(info.username) + itoq(info.userId));
+        ClientManager::get().removeClient(info.userId);
+    } else {
+        parse(recvBytes);
+    }
 }
 
 void ClientHandler::parse(int recvBytes) {
@@ -42,6 +53,12 @@ void ClientHandler::parse(int recvBytes) {
                 memcpy(info.username, join->username, strlen(join->username) + 1);
                 ClientManager::get().addClient(this);
                 recvBytes -= sizeof(Join);
+            }
+        case PktIds::SONG_REQUEST:
+            {
+                SongRequest *request = reinterpret_cast<SongRequest *>(buffer);
+                SongQueue::get().addSong(SongManager::get().at(request->songId));
+                recvBytes -= sizeof(SongRequest);
             }
         }
     }

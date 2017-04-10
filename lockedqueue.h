@@ -2,19 +2,19 @@
 #define LOCKEDQUEUE_H
 
 #include <mutex>
-#include <queue>
+#include <vector>
 
 template <typename T>
 class LockedQueue {
 public:
     void push(T elem) {
         std::lock_guard<std::mutex> guard(lock);
-        queue.push(elem);
+        queue.push_back(elem);
     }
 
     void pop() {
         std::lock_guard<std::mutex> guard(lock);
-        queue.pop();
+        queue.erase(queue.begin());
     }
 
     T front() {
@@ -26,9 +26,9 @@ public:
         std::lock_guard<std::mutex> guard(lock);
         queue.size();
     }
-private:
+protected:
     std::mutex lock;
-    std::queue<T> queue;
+    std::vector<T> queue;
 };
 
 #endif

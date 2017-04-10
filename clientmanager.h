@@ -9,9 +9,10 @@ class ClientManager : public LockedMap<int, std::shared_ptr<ClientHandler>> {
 public:
     static ClientManager& get() {return instance;}
     void addClient(ClientHandler *client);
+    void removeClient(int id);
+    void broadcast(WSABUF buf);
 private:
     static ClientManager instance;
-    void broadcast(WSABUF buf);
 };
 
 #endif // CLIENTMANAGER_H

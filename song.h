@@ -16,9 +16,12 @@ public:
         : title(title), artist(artist), album(album), audioDir(audioDir), artworkDir(artworkDir) {
         hasArtwork = true;
     }
-    void genSongInfoPkt(char *buf);
+    int getInfoPktized(char *buf, bool withArtwork);
     std::vector<Audio> genAudioPkts();
+
+    int getId() const {return id;}
 private:
+    int id;
     QString title;
     QString artist;
     QString album;

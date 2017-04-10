@@ -2,14 +2,17 @@
 #define SONGMANAGER_H
 
 #include "LockedMap.h"
-#include "SongManager.h"
 #include "Song.h"
+#include <memory>
 
-class SongManager : LockedMap<int, Song> {
+class SongManager : public LockedMap<int, Song> {
 public:
-    static SongManager& get() {return instance;};
+    static SongManager& get() {return instance;}
+    int genId() {return ++idCounter;}
+    void addSong(Song song);
 private:
-    static SongManager& instance;
+    int idCounter = 0;
+    static SongManager instance;
 };
 
 #endif

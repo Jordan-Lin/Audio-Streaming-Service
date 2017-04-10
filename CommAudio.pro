@@ -25,7 +25,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     packets.cpp \
     utilities.cpp \
     songstreamer.cpp \
@@ -37,9 +36,10 @@ SOURCES += main.cpp\
     song.cpp \
     server.cpp \
     clienthandler.cpp \
-    client.cpp
+    client.cpp \
+    mainwindow.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     packets.h \
     utilities.h \
     routinestructs.h \
@@ -54,6 +54,7 @@ HEADERS  += mainwindow.h \
     server.h \
     clienthandler.h \
     client.h \
-    defines.h
+    defines.h \
+    mainwindow.h
 
 FORMS    += mainwindow.ui

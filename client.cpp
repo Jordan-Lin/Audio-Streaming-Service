@@ -63,10 +63,48 @@ void Client::parse(int recvBytes) {
                 }
                 recvBytes -= (sizeof(PktIds::USERS) + sizeof(int));
             }
+        case PktIds::SONGS:
+            {
+                SongInfo *start = reinterpret_cast<SongInfo *>(buffer + sizeof(PktIds::SONGS) + sizeof(int));
+                SongInfo *end = reinterpret_cast<SongInfo *>(
+                            start + *reinterpret_cast<int *>(
+                            buffer + sizeof(PktIds::SONGS)));
+                while (start != end) {
+                    MainWindow::get()->logd(QString("Song name ") + start->title);
+                    MainWindow::get()->logd(QString("Song artist: ") + start->artist);
+                    MainWindow::get()->logd(QString("Song album: ") + start->album);
+                    recvBytes -= sizeof(SongInfo);
+                    ++start;
+                }
+                recvBytes -= (sizeof(PktIds::SONGS) + sizeof(int));
+            }
+        case PktIds::SONG_QUEUE:
+            {
+                int *start = reinterpret_cast<int *>(buffer + sizeof(PktIds::SONG_QUEUE) + sizeof(int));
+                int *end = reinterpret_cast<int *>(
+                            start + *reinterpret_cast<int *>(
+                            buffer + sizeof(PktIds::SONG_QUEUE)));
+                while (start != end) {
+                    MainWindow::get()->logd(QString("Song id: ") + *start);
+                    recvBytes -= sizeof(int);
+                    ++start;
+                }
+                recvBytes -= (sizeof(PktIds::SONG_QUEUE) + sizeof(int));
+            }
         }
     }
 
     wsaBuf.buf = buffer;
     wsaBuf.len = sizeof(buffer);
     receive(sock, wsaBuf, &olapWrap.olap, receiveRoutine);
+}
+
+void Client::sendSongRequest(int songId) {
+    SongRequest request;
+    request.songId = songId;
+    WSABUF wsaBuf;
+    wsaBuf.buf = reinterpret_cast<char *>(&request);
+    wsaBuf.len = sizeof(wsaBuf);
+
+    sendTCP(sock, wsaBuf);
 }
