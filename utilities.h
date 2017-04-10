@@ -1,8 +1,8 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#include "routinestructs.h"
 #include <winsock2.h>
+#include "routinestructs.h"
 #include <QString>
 #include <QWidget>
 

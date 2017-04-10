@@ -3,12 +3,17 @@
 
 #include "LockedQueue.h"
 #include "Song.h"
+#include <memory>
 
-class SongQueue : LockedQueue<Song> {
+class SongQueue : public LockedQueue<Song> {
 public:
     static SongQueue& get() { return instance; }
+    void addSong(Song song);
+    void popSong();
+
 private:
-    static SongQueue& instance;
+    void sendSongQueue();
+    static SongQueue instance;
 };
 
 #endif

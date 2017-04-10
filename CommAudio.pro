@@ -26,7 +26,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
         calldialogue.cpp \
-        packets.cpp \
         updatehandler.cpp \
         fileselectdialogue.cpp \
         utilities.cpp \
@@ -36,8 +35,6 @@ SOURCES += main.cpp\
         server.cpp \
         clienthandler.cpp \
         clientmanager.cpp \
-        lockedmap.cpp \
-        packets.cpp \
         song.cpp \
         songmanager.cpp \
         songqueue.cpp \

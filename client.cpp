@@ -2,7 +2,7 @@
 #include "utilities.h"
 #include "packets.h"
 #include <thread>
-#include "DebugWindow.h"
+#include "debugwindow.h"
 
 Client::Client(QString serverIp, QString username) {
     std::string strServerIp(serverIp.toStdString());
@@ -23,9 +23,9 @@ void Client::run(QString username) {
         Join join;
         std::string strUsername(username.toStdString());
         const char *cStrUsername = strUsername.c_str();
-        memcpy(join.username, cStrUsername, strlen(cStrUsername));
+        memcpy(join.username, cStrUsername, strlen(cStrUsername) + 1);
         wsaBuf.buf = reinterpret_cast<char *>(&join);
-        wsaBuf.len = strlen(cStrUsername);
+        wsaBuf.len = sizeof(Join);
         sendTCP(sock, wsaBuf);
 
         wsaBuf.len = BUFFER_SIZE;
@@ -51,16 +51,60 @@ void Client::parse(int recvBytes) {
         switch (*pktId) {
         case PktIds::USERS:
             {
-                for (UserInfo *info = reinterpret_cast<UserInfo *>(buffer + sizeof(PktIds::USERS) + sizeof(int));
-                        info <= reinterpret_cast<UserInfo *>(buffer + (sizeof(UserInfo) * *reinterpret_cast<int *>(
-                                buffer + sizeof(PktIds::USERS))));
-                        info++) {
-                    DebugWindow::get()->logd(QString("Client id: ") + info->userId);
-                    DebugWindow::get()->logd(QString("Client name: ") + info->username);
+                UserInfo *start = reinterpret_cast<UserInfo *>(buffer + sizeof(PktIds::USERS) + sizeof(int));
+                UserInfo *end = reinterpret_cast<UserInfo *>(
+                            start + *reinterpret_cast<int *>(
+                            buffer + sizeof(PktIds::USERS)));
+                while (start != end) {
+                    DebugWindow::get()->logd(QString("Client id: ") + start->userId);
+                    DebugWindow::get()->logd(QString("Client name: ") + start->username);
+                    recvBytes -= sizeof(UserInfo);
+                    ++start;
                 }
+                recvBytes -= (sizeof(PktIds::USERS) + sizeof(int));
+            }
+        case PktIds::SONGS:
+            {
+                SongInfo *start = reinterpret_cast<SongInfo *>(buffer + sizeof(PktIds::SONGS) + sizeof(int));
+                SongInfo *end = reinterpret_cast<SongInfo *>(
+                            start + *reinterpret_cast<int *>(
+                            buffer + sizeof(PktIds::SONGS)));
+                while (start != end) {
+                    DebugWindow::get()->logd(QString("Song name ") + start->title);
+                    DebugWindow::get()->logd(QString("Song artist: ") + start->artist);
+                    DebugWindow::get()->logd(QString("Song album: ") + start->album);
+                    recvBytes -= sizeof(SongInfo);
+                    ++start;
+                }
+                recvBytes -= (sizeof(PktIds::SONGS) + sizeof(int));
+            }
+        case PktIds::SONG_QUEUE:
+            {
+                int *start = reinterpret_cast<int *>(buffer + sizeof(PktIds::SONG_QUEUE) + sizeof(int));
+                int *end = reinterpret_cast<int *>(
+                            start + *reinterpret_cast<int *>(
+                            buffer + sizeof(PktIds::SONG_QUEUE)));
+                while (start != end) {
+                    DebugWindow::get()->logd(QString("Song id: ") + *start);
+                    recvBytes -= sizeof(int);
+                    ++start;
+                }
+                recvBytes -= (sizeof(PktIds::SONG_QUEUE) + sizeof(int));
             }
         }
     }
 
+    wsaBuf.buf = buffer;
+    wsaBuf.len = sizeof(buffer);
     receive(sock, wsaBuf, &olapWrap.olap, receiveRoutine);
+}
+
+void Client::sendSongRequest(int songId) {
+    SongRequest request;
+    request.songId = songId;
+    WSABUF wsaBuf;
+    wsaBuf.buf = reinterpret_cast<char *>(&request);
+    wsaBuf.len = sizeof(wsaBuf);
+
+    sendTCP(sock, wsaBuf);
 }

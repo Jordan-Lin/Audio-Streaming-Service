@@ -15,12 +15,13 @@ public:
     SOCKET getSocket() {return info.userId;}
 private:
     UserInfo info;
-    ClientOlap olapWrap;
+    ClientHandlerOlap olapWrap;
     WSABUF wsaBuf;
     char buffer[BUFFER_SIZE];
 
     void init();
     static void CALLBACK receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
+    void handleReceive(int recvBytes);
     void parse(int recvBytes);
 };
 

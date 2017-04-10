@@ -6,7 +6,6 @@
 #include <ws2tcpip.h>
 #include <QMessageBox>
 
-
 #define TIMECAST_TTL    2
 
 void startup() {
