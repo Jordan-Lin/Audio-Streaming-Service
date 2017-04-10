@@ -36,16 +36,13 @@ private slots:
 
 
     // Button clicked event
-    void on_B_Connect_clicked();
     void on_LV_SongList_doubleClicked(const QModelIndex &index);
+    void on_B_Connect_clicked();
     void on_B_Call_clicked();
     void on_B_RunServer_clicked();
     void on_B_AddItemTEST_clicked();
-
     void on_B_Upload_clicked();
-
     void on_B_Download_clicked();
-
     void on_B_Request_clicked();
 
 //signals:
@@ -68,9 +65,6 @@ private:
     QStringListModel *QList;
     QStringList userList;
     QStringListModel *UList;
-
-    // Call Dialogue Object
-//    CallDialogue *callDialogue;
 };
 
 #endif // MAINWINDOW_H

@@ -26,13 +26,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
         calldialogue.cpp \
-    packets.cpp \
-    updatehandler.cpp
+        packets.cpp \
+        updatehandler.cpp \
+        fileselectdialogue.cpp \
+    utilities.cpp
 
 HEADERS  += mainwindow.h \
         calldialogue.h \
-    packets.h \
-    updatehandler.h
+        packets.h \
+        updatehandler.h \
+        fileselectdialogue.h \
+        utilities.h \
+    routinestructs.h
 
 FORMS    += mainwindow.ui \
-    calldialogue.ui
+    calldialogue.ui \
+    fileselectdialogue.ui

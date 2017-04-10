@@ -22,6 +22,7 @@ signals:
     void updateSongVector(std::vector<std::string> list);
     void updateQueueVector(std::vector<std::string> list);
     void updateUserVector(std::vector<std::string> list);
+    void signalSongTitle(QString song);
 
 public:
     static UpdateHandler *instance;

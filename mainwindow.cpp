@@ -3,11 +3,14 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "fileselectdialogue.h"
 
 #include <QT>
 #include <QDebug>
 #include <QMessageBox>
 #include <QAbstractItemView>
+
+
 
 #include <string>
 #include <ws2tcpip.h>
@@ -42,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->LV_QueueList->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->LV_QueueList->setSelectionMode(QAbstractItemView::NoSelection);
     ui->LV_UserList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    ui->HS_SongProgress->setEnabled(false);
 
     // Create model
     SList = new QStringListModel(this);
@@ -392,7 +397,7 @@ void MainWindow::on_B_RunServer_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Upload_clicked()
 {
-    // Open file select dialogue, get path, open file, write to buffer and send to server for upload.
+    FileSelectDialogue::get()->show();
 }
 
 /*------------------------------------------------------------------------------
