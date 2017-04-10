@@ -23,9 +23,9 @@ void Client::run(QString username) {
         Join join;
         std::string strUsername(username.toStdString());
         const char *cStrUsername = strUsername.c_str();
-        memcpy(join.username, cStrUsername, strlen(cStrUsername));
+        memcpy(join.username, cStrUsername, strlen(cStrUsername) + 1);
         wsaBuf.buf = reinterpret_cast<char *>(&join);
-        wsaBuf.len = strlen(cStrUsername);
+        wsaBuf.len = sizeof(Join);
         sendTCP(sock, wsaBuf);
 
         wsaBuf.len = BUFFER_SIZE;
@@ -51,16 +51,22 @@ void Client::parse(int recvBytes) {
         switch (*pktId) {
         case PktIds::USERS:
             {
-                for (UserInfo *info = reinterpret_cast<UserInfo *>(buffer + sizeof(PktIds::USERS) + sizeof(int));
-                        info <= reinterpret_cast<UserInfo *>(buffer + (sizeof(UserInfo) * *reinterpret_cast<int *>(
-                                buffer + sizeof(PktIds::USERS))));
-                        info++) {
-                    MainWindow::get()->logd(QString("Client id: ") + info->userId);
-                    MainWindow::get()->logd(QString("Client name: ") + info->username);
+                UserInfo *start = reinterpret_cast<UserInfo *>(buffer + sizeof(PktIds::USERS) + sizeof(int));
+                UserInfo *end = reinterpret_cast<UserInfo *>(
+                            start + *reinterpret_cast<int *>(
+                            buffer + sizeof(PktIds::USERS)));
+                while (start != end) {
+                    MainWindow::get()->logd(QString("Client id: ") + start->userId);
+                    MainWindow::get()->logd(QString("Client name: ") + start->username);
+                    recvBytes -= sizeof(UserInfo);
+                    ++start;
                 }
+                recvBytes -= (sizeof(PktIds::USERS) + sizeof(int));
             }
         }
     }
 
+    wsaBuf.buf = buffer;
+    wsaBuf.len = sizeof(buffer);
     receive(sock, wsaBuf, &olapWrap.olap, receiveRoutine);
 }

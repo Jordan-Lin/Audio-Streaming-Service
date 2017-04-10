@@ -15,7 +15,7 @@ public:
     SOCKET getSocket() {return info.userId;}
 private:
     UserInfo info;
-    ClientOlap olapWrap;
+    ClientHandlerOlap olapWrap;
     WSABUF wsaBuf;
     char buffer[BUFFER_SIZE];
 
