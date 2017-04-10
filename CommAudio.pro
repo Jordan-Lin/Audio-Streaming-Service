@@ -29,16 +29,45 @@ SOURCES += main.cpp\
         packets.cpp \
         updatehandler.cpp \
         fileselectdialogue.cpp \
-    utilities.cpp
+        utilities.cpp \
+        debugwindow.cpp \
+        songstreamer.cpp \
+        client.cpp \
+        server.cpp \
+        clienthandler.cpp \
+        clientmanager.cpp \
+        lockedmap.cpp \
+        packets.cpp \
+        song.cpp \
+        songmanager.cpp \
+        songqueue.cpp \
+        songstreamer.cpp \
+        songstreamreceiver.cpp
 
 HEADERS  += mainwindow.h \
         calldialogue.h \
+        defines.h \
         packets.h \
         updatehandler.h \
         fileselectdialogue.h \
         utilities.h \
-    routinestructs.h
+        routinestructs.h \
+        debugwindow.h \
+        songstreamer.h\
+        client.h \
+        server.h \
+        clienthandler.h \
+        clientmanager.h \
+        lockedmap.h \
+        lockedqueue.h \
+        packets.h \
+        song.h \
+        songmanager.h \
+        songqueue.h \
+        songstreamer.h \
+        songstreamreceiver.h
 
 FORMS    += mainwindow.ui \
-    calldialogue.ui \
-    fileselectdialogue.ui
+        calldialogue.ui \
+        fileselectdialogue.ui \
+        debugwindow.ui

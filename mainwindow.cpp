@@ -123,6 +123,8 @@ void MainWindow::showWarningMessage(QString title, QString msg)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete server;
+    delete client;
 }
 
 
@@ -279,11 +281,7 @@ void MainWindow::on_B_Connect_clicked()
 {
     if(!(ui->LE_IPAddress->text().isEmpty()) && !(ui->LE_Username->text().isEmpty()))
     {
-        std::string tip  = ui->LE_IPAddress->text().toStdString();
-//        int port  = ui->LE_Port->text().toInt();                              // Remove cause port is unneeded. Leave if changed mind
-        u_long ip = stoul(tip, nullptr, 0);
-        // Utilities call for creating socket structure.
-        // Use the socket structure for connecting to the server.
+        client = new Client (ui->LE_IPAddress->text(), ui->LE_Username->text());
     } else {
         showWarningMessage("Missing Input", "Please enter a username and IP address.");
     }
@@ -374,7 +372,7 @@ void MainWindow::on_B_Call_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_RunServer_clicked()
 {
-    // TODO Set all buttons, Horizontal slider, line edits and list views to disabled.
+    server = new Server();
 }
 
 /*------------------------------------------------------------------------------

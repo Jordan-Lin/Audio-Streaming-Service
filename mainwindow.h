@@ -3,6 +3,8 @@
 
 #include "calldialogue.h"
 #include "updatehandler.h"
+#include "server.h"
+#include "client.h"
 
 #include <QMainWindow>
 #include <QDialog>
@@ -65,6 +67,9 @@ private:
     QStringListModel *QList;
     QStringList userList;
     QStringListModel *UList;
+
+    Server *server;
+    Client *client;
 };
 
 #endif // MAINWINDOW_H

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <windows.h>
 #include <sstream>
-//#include "mainwindow.h"
+#include "debugwindow.h"
 #include <ws2tcpip.h>
 #include <QMessageBox>
 
@@ -13,10 +13,10 @@ void startup() {
     WSADATA wsaData;
     int ret = WSAStartup(0x0202, &wsaData);
     if (ret != 0) {
-//        MainWindow::get()->logd(QString("WSAStartup failed with error: ") + itoq(ret));                           // MainWindow Fix
+        DebugWindow::get()->logd(QString("WSAStartup failed with error: ") + itoq(ret));
         WSACleanup();
     } else {
-//        MainWindow::get()->logd("WSAStartup success.");                                                           // MainWindow Fix
+        DebugWindow::get()->logd("WSAStartup success.");
     }
 }
 
@@ -135,7 +135,7 @@ void printError(const char *msg, int errCode) {
                    NULL, errCode,
                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                    (LPWSTR)&s, 0, NULL);
-//    MainWindow::get()->logd(QString(msg) + QString(": ") + QString::fromWCharArray(s) + QString(", errCode: ") + itoq(errCode));         // MainWindow Fix
+    DebugWindow::get()->logd(QString(msg) + QString(": ") + QString::fromWCharArray(s) + QString(", errCode: ") + itoq(errCode));
     LocalFree(s);
 }
 
