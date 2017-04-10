@@ -25,10 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    calldialogue.cpp
+        calldialogue.cpp \
+    packets.cpp \
+    updatehandler.cpp
 
 HEADERS  += mainwindow.h \
-    calldialogue.h
+        calldialogue.h \
+    packets.h \
+    updatehandler.h
 
 FORMS    += mainwindow.ui \
     calldialogue.ui

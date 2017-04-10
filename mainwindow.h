@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include "calldialogue.h"
+#include "updatehandler.h"
+
 #include <QMainWindow>
 #include <QDialog>
 #include <QStringList>
@@ -46,10 +48,10 @@ private slots:
 
     void on_B_Request_clicked();
 
-signals:
-    void updateSongVector(std::vector<std::string> list);
-    void updateQueueVector(std::vector<std::string> list);
-    void updateUserVector(std::vector<std::string> list);
+//signals:
+//    void updateSongVector(std::vector<std::string> list);
+//    void updateQueueVector(std::vector<std::string> list);
+//    void updateUserVector(std::vector<std::string> list);
 
 private:
     Ui::MainWindow *ui;

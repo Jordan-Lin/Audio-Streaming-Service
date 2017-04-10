@@ -59,9 +59,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->LV_UserList->setModel(UList);
 
     // Connect signals to slots for Lists
-    connect(this, &MainWindow::updateSongVector, this, &MainWindow::updatedSList);
-    connect(this, &MainWindow::updateQueueVector, this, &MainWindow::updatedQList);
-    connect(this, &MainWindow::updateUserVector, this, &MainWindow::updatedUList);
+//    connect(this, &MainWindow::updateSongVector, this, &MainWindow::updatedSList);
+//    connect(this, &MainWindow::updateQueueVector, this, &MainWindow::updatedQList);
+//    connect(this, &MainWindow::updateUserVector, this, &MainWindow::updatedUList);
 
 }
 
@@ -146,11 +146,11 @@ MainWindow::~MainWindow()
 void MainWindow::on_B_AddItemTEST_clicked()
 {
     songVector.push_back("Song");
-    emit updateSongVector(songVector);
+    UpdateHandler::get()->emitUSV(songVector);
     queueVector.push_back("Song");
-    emit updateQueueVector(queueVector);
+    UpdateHandler::get()->emitUQV(queueVector);
     userVector.push_back("User");
-    emit updateUserVector(userVector);
+    UpdateHandler::get()->emitUUV(userVector);
 }
 /*----------------------------------------------
  Test Buttons
