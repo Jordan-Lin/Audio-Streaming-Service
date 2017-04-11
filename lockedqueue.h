@@ -7,6 +7,11 @@
 template <typename T>
 class LockedQueue {
 public:
+    void empty() {
+        std::lock_guard<std::mutex> guard(lock);
+        queue.empty();
+    }
+
     void push(T elem) {
         std::lock_guard<std::mutex> guard(lock);
         queue.push_back(elem);
@@ -26,6 +31,16 @@ public:
         std::lock_guard<std::mutex> guard(lock);
         queue.size();
     }
+
+    std::vector<T> getAll() {
+        std::lock_guard<std::mutex> guard(lock);
+        std::vector<T> queueCopy;
+        for (auto& elem : queue) {
+            queueCopy.push_back(elem);
+        }
+        return queueCopy;
+    }
+
 protected:
     std::mutex lock;
     std::vector<T> queue;

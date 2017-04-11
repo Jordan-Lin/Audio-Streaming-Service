@@ -14,14 +14,14 @@ public:
 
     static UpdateHandler *get();
 
-    void emitUSV(const std::vector<std::string> list);
-    void emitUQV(const std::vector<std::string> list);
-    void emitUUV(const std::vector<std::string> list);
+    void emitUSV();
+    void emitUQV();
+    void emitUUV();
 
 signals:
-    void updateSongVector(std::vector<std::string> list);
-    void updateQueueVector(std::vector<std::string> list);
-    void updateUserVector(std::vector<std::string> list);
+    void updateSongVector();
+    void updateQueueVector();
+    void updateUserVector();
     void signalSongTitle(QString song);
 
 public:

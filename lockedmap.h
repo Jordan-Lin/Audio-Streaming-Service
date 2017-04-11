@@ -28,14 +28,14 @@ public:
         return map.size();
     }
 
-    const Val at(Key key) {
+    Val at(Key key) {
         std::lock_guard<std::mutex> guard(lock);
         return map.at(key);
     }
 
-    const std::vector<const Val> getAll() {
+    std::vector<Val> getAll() {
         std::lock_guard<std::mutex> guard(lock);
-        std::vector<const Val> all;
+        std::vector<Val> all;
         for (auto& elem : map) {
             all.push_back(elem.second);
         }

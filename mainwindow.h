@@ -32,9 +32,9 @@ public:
 
 private slots:
     // Update list slots
-    void updatedSList(std::vector<std::string> list);
-    void updatedQList(std::vector<std::string> list);
-    void updatedUList(std::vector<std::string> list);
+    void updatedSList();
+    void updatedQList();
+    void updatedUList();
 
 
     // Button clicked event
@@ -55,11 +55,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    // List vectors
-    std::vector<std::string> songVector;
-    std::vector<std::string> queueVector;
-    std::vector<std::string> userVector;
-
     // List Model Pairs
     QStringList songList;
     QStringListModel *SList;
@@ -68,8 +63,8 @@ private:
     QStringList userList;
     QStringListModel *UList;
 
-    Server *server;
-    Client *client;
+    Server *server = nullptr;
+    Client *client = nullptr;
 };
 
 #endif // MAINWINDOW_H

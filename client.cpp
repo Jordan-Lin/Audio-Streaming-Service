@@ -3,6 +3,11 @@
 #include "packets.h"
 #include <thread>
 #include "debugwindow.h"
+#include "updatehandler.h"
+#include "usermanager.h"
+#include "debugwindow.h"
+#include "songmanager.h"
+#include "songqueue.h"
 
 Client::Client(QString serverIp, QString username) {
     std::string strServerIp(serverIp.toStdString());
@@ -46,54 +51,96 @@ void Client::receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, D
 }
 
 void Client::parse(int recvBytes) {
-    PktIds *pktId = reinterpret_cast<PktIds *>(buffer);
+    char *tempBuffer = buffer;
+    int offset = 0;
     while (recvBytes) {
+        tempBuffer += offset;
+        PktIds *pktId = reinterpret_cast<PktIds *>(tempBuffer);
         switch (*pktId) {
         case PktIds::USERS:
             {
-                UserInfo *start = reinterpret_cast<UserInfo *>(buffer + sizeof(PktIds::USERS) + sizeof(int));
+                UserInfo *start = reinterpret_cast<UserInfo *>(tempBuffer + sizeof(PktIds::USERS) + sizeof(int));
                 UserInfo *end = reinterpret_cast<UserInfo *>(
                             start + *reinterpret_cast<int *>(
-                            buffer + sizeof(PktIds::USERS)));
+                            tempBuffer + sizeof(PktIds::USERS)));
                 while (start != end) {
-                    DebugWindow::get()->logd(QString("Client id: ") + start->userId);
-                    DebugWindow::get()->logd(QString("Client name: ") + start->username);
-                    recvBytes -= sizeof(UserInfo);
+                    User user(start->username, start->userId);
+                    if (start->userId != id) {
+                        UserManager::get().insert(start->userId, user);
+                        DebugWindow::get()->logd(QString("User id: ") + itoq(start->userId) +
+                                QString(", User name: ") + start->username);
+                    }
+                    offset += sizeof(UserInfo);
                     ++start;
                 }
-                recvBytes -= (sizeof(PktIds::USERS) + sizeof(int));
+                offset += (sizeof(PktIds::USERS) + sizeof(int));
+                UpdateHandler::get()->emitUUV();
             }
+            break;
         case PktIds::SONGS:
             {
-                SongInfo *start = reinterpret_cast<SongInfo *>(buffer + sizeof(PktIds::SONGS) + sizeof(int));
-                SongInfo *end = reinterpret_cast<SongInfo *>(
-                            start + *reinterpret_cast<int *>(
-                            buffer + sizeof(PktIds::SONGS)));
-                while (start != end) {
-                    DebugWindow::get()->logd(QString("Song name ") + start->title);
-                    DebugWindow::get()->logd(QString("Song artist: ") + start->artist);
-                    DebugWindow::get()->logd(QString("Song album: ") + start->album);
-                    recvBytes -= sizeof(SongInfo);
-                    ++start;
+                int songOffset = sizeof(PktIds::SONGS);
+                int numSongs = *reinterpret_cast<int *>(tempBuffer + songOffset);
+                songOffset += sizeof(int);
+                while (numSongs--) {
+                    songOffset += sizeof(PktIds::SONG_INFO);
+                    int songId = *reinterpret_cast<int *>(tempBuffer + songOffset);
+                    songOffset += sizeof(int);
+
+                    int titleLen = *reinterpret_cast<int *>(tempBuffer + songOffset);
+                    songOffset += sizeof(int);
+                    QString title(tempBuffer + songOffset);
+                    songOffset += titleLen;
+
+                    int artistLen = *reinterpret_cast<int *>(tempBuffer + songOffset);
+                    songOffset += sizeof(int);
+                    QString artist(tempBuffer + songOffset);
+                    songOffset += artistLen;
+
+                    int albumLen = *reinterpret_cast<int *>(tempBuffer + songOffset);
+                    songOffset += sizeof(int);
+                    QString album(tempBuffer + songOffset);
+                    songOffset += albumLen;
+
+                    songOffset += sizeof(int);
+                    Song song(songId, title, artist, album);
+                    SongManager::get().insert(songId, song);
                 }
-                recvBytes -= (sizeof(PktIds::SONGS) + sizeof(int));
+                offset += songOffset;
+                UpdateHandler::get()->emitUSV();
             }
+            break;
         case PktIds::SONG_QUEUE:
             {
-                int *start = reinterpret_cast<int *>(buffer + sizeof(PktIds::SONG_QUEUE) + sizeof(int));
+                SongQueue::get().empty();
+                int *start = reinterpret_cast<int *>(tempBuffer + sizeof(PktIds::SONG_QUEUE) +
+                        sizeof(int));
                 int *end = reinterpret_cast<int *>(
-                            start + *reinterpret_cast<int *>(
-                            buffer + sizeof(PktIds::SONG_QUEUE)));
+                        start + *reinterpret_cast<int *>(
+                        tempBuffer + sizeof(PktIds::SONG_QUEUE)));
                 while (start != end) {
-                    DebugWindow::get()->logd(QString("Song id: ") + *start);
-                    recvBytes -= sizeof(int);
+                    if (SongManager::get().exists(*start)) {
+                        SongQueue::get().push(SongManager::get().at(*start));
+                    }
+                    offset += sizeof(int);
                     ++start;
                 }
-                recvBytes -= (sizeof(PktIds::SONG_QUEUE) + sizeof(int));
+                offset += (sizeof(PktIds::SONG_QUEUE) + sizeof(int));
+                UpdateHandler::get()->emitUQV();
             }
+            break;
+        case PktIds::USER_ID:
+            {
+                UserId *pktId = reinterpret_cast<UserId *>(tempBuffer);
+                id = pktId->id;
+                offset += (sizeof(UserId));
+            }
+            break;
         }
+        recvBytes -= offset;
     }
 
+    memset(buffer, 0, sizeof(buffer));
     wsaBuf.buf = buffer;
     wsaBuf.len = sizeof(buffer);
     receive(sock, wsaBuf, &olapWrap.olap, receiveRoutine);

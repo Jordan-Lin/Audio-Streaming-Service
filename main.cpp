@@ -8,14 +8,14 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    DebugWindow::get()->show();
     MainWindow w;
+    DebugWindow::get()->show();
     w.show();
     startup();
 
-    QObject::connect(UpdateHandler::get(),SIGNAL(updateSongVector(std::vector<std::string>)), &w, SLOT(updatedSList(std::vector<std::string>)));
-    QObject::connect(UpdateHandler::get(), SIGNAL(updateQueueVector(std::vector<std::string>)), &w, SLOT(updatedQList(std::vector<std::string>)));
-    QObject::connect(UpdateHandler::get(), SIGNAL(updateUserVector(std::vector<std::string>)), &w, SLOT(updatedUList(std::vector<std::string>)));
+    QObject::connect(UpdateHandler::get(),SIGNAL(updateSongVector()), &w, SLOT(updatedSList()));
+    QObject::connect(UpdateHandler::get(), SIGNAL(updateQueueVector()), &w, SLOT(updatedQList()));
+    QObject::connect(UpdateHandler::get(), SIGNAL(updateUserVector()), &w, SLOT(updatedUList()));
 
     return a.exec();
 }

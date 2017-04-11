@@ -39,7 +39,9 @@ SOURCES += main.cpp\
         songmanager.cpp \
         songqueue.cpp \
         songstreamer.cpp \
-        songstreamreceiver.cpp
+        songstreamreceiver.cpp \
+    usermanager.cpp \
+    user.cpp
 
 HEADERS  += mainwindow.h \
         calldialogue.h \
@@ -62,7 +64,9 @@ HEADERS  += mainwindow.h \
         songmanager.h \
         songqueue.h \
         songstreamer.h \
-        songstreamreceiver.h
+        songstreamreceiver.h \
+    usermanager.h \
+    user.h
 
 FORMS    += mainwindow.ui \
         calldialogue.ui \

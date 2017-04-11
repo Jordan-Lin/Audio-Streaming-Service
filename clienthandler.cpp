@@ -50,16 +50,30 @@ void ClientHandler::parse(int recvBytes) {
             {
                 Join *join = reinterpret_cast<Join *>(buffer);
                 DebugWindow::get()->logd(QString("THIS PERSON JOINED: ") + join->username);
+
+                UserId idPkt;
+                idPkt.id = info.userId;
+                WSABUF wsaBuf;
+                wsaBuf.buf = reinterpret_cast<char *>(&idPkt);
+                wsaBuf.len = sizeof(idPkt);
+                sendTCP(info.userId, wsaBuf);
+
                 memcpy(info.username, join->username, strlen(join->username) + 1);
                 ClientManager::get().addClient(this);
                 recvBytes -= sizeof(Join);
+
+                SongManager::get().sendSongList();
+                //SongQueue::get().sendSongQueue();
             }
+            break;
         case PktIds::SONG_REQUEST:
             {
                 SongRequest *request = reinterpret_cast<SongRequest *>(buffer);
                 SongQueue::get().addSong(SongManager::get().at(request->songId));
+
                 recvBytes -= sizeof(SongRequest);
             }
+            break;
         }
     }
 

@@ -9,25 +9,34 @@ SongManager SongManager::instance;
 void SongManager::addSong(Song song) {
     std::lock_guard<std::mutex> guard(lock);
     map.insert(std::pair<int, Song>(song.getId(), song));
+    unlockedSendSongList();
+}
 
-    PktIds pktId = PktIds::SONGS;
-    int numSongs = static_cast<int>(map.size());
+void SongManager::sendSongList() {
+    std::lock_guard<std::mutex> guard(lock);
+    unlockedSendSongList();
+}
 
-    std::vector<char> sendLine;
+void SongManager::unlockedSendSongList() {
     WSABUF wsaBuf;
-    wsaBuf.len = static_cast<u_long>(numSongs) * sizeof(SongInfo) + sizeof(PktIds::SONGS) + sizeof(int);
-    sendLine.resize(wsaBuf.len);
-    wsaBuf.buf = sendLine.data();
+    wsaBuf.buf = buffer;
 
-    memcpy(wsaBuf.buf, &pktId, sizeof(pktId));
-    int offset = sizeof(pktId);
+    int numSongs = static_cast<int>(map.size());
+    PktIds pktId = PktIds::SONGS;
 
-    memcpy(wsaBuf.buf, &numSongs, sizeof(numSongs));
-    offset += sizeof(numSongs);
+    memcpy(wsaBuf.buf, &pktId, sizeof(PktIds::SONGS));
+    int offset = sizeof(PktIds::SONGS);
+
+    memcpy(wsaBuf.buf + offset, &numSongs, sizeof(numSongs));
+    offset += sizeof(int);
 
     for (auto& elem : map) {
-        offset += elem.second.getInfoPktized(wsaBuf.buf + offset, false);
+        const int pktLen = elem.second.getInfoPktLen(false);
+        elem.second.getInfoPktized(wsaBuf.buf + offset, false);
+        offset += pktLen;
     }
+
+    wsaBuf.len = offset;
 
     ClientManager::get().broadcast(wsaBuf);
 }

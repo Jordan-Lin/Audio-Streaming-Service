@@ -18,7 +18,8 @@ enum PktIds {
     USER_INFO,
     SONGS,
     SONG_REQUEST,
-    SONG_QUEUE
+    SONG_QUEUE,
+    USER_ID
 };
 
 typedef struct {
@@ -77,4 +78,9 @@ typedef struct {
     int songId;
 } SongRequest;
 
-#endif // PACKETS_H
+typedef struct {
+    PktIds pktId = PktIds::USER_ID;
+    int id;
+} UserId;
+
+#endif

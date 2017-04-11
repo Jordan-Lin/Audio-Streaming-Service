@@ -20,6 +20,7 @@ private:
     ClientOlap olapWrap;
     char buffer[LARGE_BUFFER_SIZE];
     struct sockaddr_in servAddr;
+    int id;
 
     void run(QString username);
 };

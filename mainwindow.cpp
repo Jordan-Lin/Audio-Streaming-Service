@@ -9,8 +9,10 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QAbstractItemView>
-
-
+#include "usermanager.h"
+#include "songmanager.h"
+#include "debugwindow.h"
+#include "songqueue.h"
 
 #include <string>
 #include <ws2tcpip.h>
@@ -123,8 +125,12 @@ void MainWindow::showWarningMessage(QString title, QString msg)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete server;
-    delete client;
+    if (server != nullptr) {
+        delete server;
+    }
+    if (client != nullptr) {
+        delete client;
+    }
 }
 
 
@@ -152,12 +158,14 @@ MainWindow::~MainWindow()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_AddItemTEST_clicked()
 {
+    /*
     songVector.push_back("Song");
     UpdateHandler::get()->emitUSV(songVector);
     queueVector.push_back("Song");
     UpdateHandler::get()->emitUQV(queueVector);
     userVector.push_back("User");
     UpdateHandler::get()->emitUUV(userVector);
+    */
 }
 /*----------------------------------------------
  Test Buttons
@@ -185,11 +193,11 @@ void MainWindow::on_B_AddItemTEST_clicked()
 -- NOTES:
 --
 ------------------------------------------------------------------------------*/
-void MainWindow::updatedSList(std::vector<std::string> list)
+void MainWindow::updatedSList()
 {
     songList.clear();
-    for (const auto& i : list) {
-        songList << QString::fromStdString(i);
+    for (const auto& song : SongManager::get().getAll()) {
+        songList << song.getTitle();
     }
     SList->setStringList(songList);
     ui->LV_SongList->setModel(SList);
@@ -213,12 +221,12 @@ void MainWindow::updatedSList(std::vector<std::string> list)
 -- NOTES:
 --
 ------------------------------------------------------------------------------*/
-void MainWindow::updatedQList(std::vector<std::string> list)
+void MainWindow::updatedQList()
 {
     queueList.clear();
 
-    for (const auto& i : list) {
-        queueList << QString::fromStdString(i);
+    for (const auto& song : SongQueue::get().getAll()) {
+        queueList << song.getTitle();
     }
     this->QList->setStringList(queueList);
     ui->LV_QueueList->setModel(this->QList);
@@ -242,11 +250,12 @@ void MainWindow::updatedQList(std::vector<std::string> list)
 -- NOTES:
 --
 ------------------------------------------------------------------------------*/
-void MainWindow::updatedUList(std::vector<std::string> list)
+void MainWindow::updatedUList()
 {
+    DebugWindow::get()->logd("updateUList");
     userList.clear();
-    for (const auto& i : list) {
-        userList << QString::fromStdString(i);
+    for (const auto& user : UserManager::get().getAll()) {
+        userList << user.getUsername();
     }
     UList->setStringList(userList);
     ui->LV_UserList->setModel(UList);
@@ -281,7 +290,9 @@ void MainWindow::on_B_Connect_clicked()
 {
     if(!(ui->LE_IPAddress->text().isEmpty()) && !(ui->LE_Username->text().isEmpty()))
     {
-        client = new Client (ui->LE_IPAddress->text(), ui->LE_Username->text());
+        if (client == nullptr) {
+            client = new Client (ui->LE_IPAddress->text(), ui->LE_Username->text());
+        }
     } else {
         showWarningMessage("Missing Input", "Please enter a username and IP address.");
     }
@@ -372,7 +383,9 @@ void MainWindow::on_B_Call_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_RunServer_clicked()
 {
-    server = new Server();
+    if (server == nullptr) {
+        server = new Server();
+    }
 }
 
 /*------------------------------------------------------------------------------

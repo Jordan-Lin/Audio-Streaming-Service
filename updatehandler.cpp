@@ -15,17 +15,17 @@ UpdateHandler *UpdateHandler::get()
     return instance;
 }
 
-void UpdateHandler::emitUSV(const std::vector<std::string> list)
+void UpdateHandler::emitUSV()
 {
-    emit updateSongVector(list);
+    emit updateSongVector();
 }
 
-void UpdateHandler::emitUQV(const std::vector<std::string> list)
+void UpdateHandler::emitUQV()
 {
-    emit updateQueueVector(list);
+    emit updateQueueVector();
 }
 
-void UpdateHandler::emitUUV(const std::vector<std::string> list)
+void UpdateHandler::emitUUV()
 {
-    emit updateUserVector(list);
+    emit updateUserVector();
 }
