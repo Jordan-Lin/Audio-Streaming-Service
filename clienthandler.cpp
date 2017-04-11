@@ -8,8 +8,9 @@
 #include "songmanager.h"
 #include "songqueue.h"
 
-ClientHandler::ClientHandler(SOCKET sock) {
+ClientHandler::ClientHandler(SOCKET sock, u_long ip) {
     info.userId = sock;
+    info.ip = ip;
     olapWrap.client = this;
     std::thread clientThread(&ClientHandler::init, this);
     clientThread.detach();

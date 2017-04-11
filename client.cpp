@@ -66,11 +66,10 @@ void Client::parse(int recvBytes) {
                             start + *reinterpret_cast<int *>(
                             tempBuffer + sizeof(PktIds::USERS)));
                 while (start != end) {
-                    User user(start->username, start->userId);
+                    DebugWindow::get()->logd(QString("New user ip: ") + itoq(start->ip));
+                    User user(start->username, start->userId, start->ip);
                     if (start->userId != id) {
                         UserManager::get().insert(start->userId, user);
-                        DebugWindow::get()->logd(QString("User id: ") + itoq(start->userId) +
-                                QString(", User name: ") + start->username);
                     }
                     offset += sizeof(UserInfo);
                     ++start;

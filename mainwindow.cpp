@@ -167,9 +167,9 @@ void MainWindow::on_B_AddItemTEST_clicked()
     userVector.push_back("User");
     UpdateHandler::get()->emitUUV(userVector);
     */
-    User u("UserTest", 123);
-    UserManager::get().insert(123, u);
-    UpdateHandler::get()->emitUUV();
+    //User u("UserTest", 123);
+    //UserManager::get().insert(123, u);
+    //UpdateHandler::get()->emitUUV();
 }
 /*----------------------------------------------
  Test Buttons

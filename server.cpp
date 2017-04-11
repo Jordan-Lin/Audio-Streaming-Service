@@ -5,6 +5,7 @@
 #include <thread>
 #include "utilities.h"
 #include "songmanager.h"
+#include "debugwindow.h"
 
 Server::Server() {
     state = ServerState::INITIALIZING;
@@ -17,11 +18,13 @@ void Server::run() {
     bindSocket(listenSock, createAddress(htonl(INADDR_ANY), htons(REQUEST_PORT)));
     listen(listenSock, 5);
 
-    addDummySongs();
+    //addDummySongs();
     state = ServerState::RUNNING;
     for(;;) {
         //attatched to shared_ptr once Join packet is received.
-        ClientHandler *client = new ClientHandler(acceptConnection(listenSock));
+        std::pair<SOCKET, struct sockaddr_in> sockAddr = acceptConnectionGetAddr(listenSock);
+        DebugWindow::get()->logd(QString("rece3ived ip: ") + itoq(sockAddr.second.sin_addr.s_addr));
+        ClientHandler *client = new ClientHandler(sockAddr.first, sockAddr.second.sin_addr.s_addr);
     }
 }
 

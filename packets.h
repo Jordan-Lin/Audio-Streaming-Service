@@ -2,6 +2,8 @@
 #define PACKETS_H
 
 #include <QtGlobal>
+#include <winsock2.h>
+#include <windows.h>
 
 #define AUDIO_BUFFER_SIZE 1024
 #define SONG_TITLE_SIZE 256
@@ -56,6 +58,7 @@ typedef struct {
     PktIds pktId = PktIds::USER_INFO;
     int userId;
     char username[MAX_USERNAME];
+    u_long ip;
 } UserInfo;
 
 typedef struct {

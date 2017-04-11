@@ -35,8 +35,14 @@ SOCKET acceptConnection(SOCKET sock) {
     return acceptSock;
 }
 
-std::pair<SOCKET, struct sockaddr_in> acceptConnectionGetAdd(SOCKET sock) {
-
+std::pair<SOCKET, struct sockaddr_in> acceptConnectionGetAddr(SOCKET sock) {
+    struct sockaddr_in addr;
+    INT addrLen = sizeof(addr);
+    SOCKET acceptSock = WSAAccept(sock, (sockaddr *)&addr, &addrLen, NULL, NULL);
+    if (acceptSock == INVALID_SOCKET) {
+        handleError(WSAGetLastError(), "acceptConnection, WSAAccept", ErrorType::ACCEPT_CONNECTION);
+    }
+    return std::pair<SOCKET, struct sockaddr_in>(acceptSock, addr);
 }
 
 bool connectSocket(SOCKET sock, struct sockaddr_in addr) {

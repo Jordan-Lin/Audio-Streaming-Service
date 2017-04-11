@@ -53,6 +53,8 @@ void ClientManager::unlockedSendUserList() {
             itoq(client.second.get()->getInfo().userId) +
             QString(", username: ") +
             QString(client.second.get()->getInfo().username) +
+            QString(", ip: ") +
+            QString(itoq(client.second.get()->getInfo().ip)) +
             QString("\n"));
         memcpy(wsaBuf.buf + offset, &client.second.get()->getInfo(), sizeof(UserInfo));
         offset += sizeof(UserInfo);

@@ -30,6 +30,7 @@ SOCKET acceptConnection(SOCKET sock);
 bool connectSocket(SOCKET sock, struct sockaddr_in addr);
 void sendTCP(SOCKET sock, WSABUF& wsaBuf);
 void bindSocket(SOCKET sock, struct sockaddr_in addr);
+std::pair<SOCKET, struct sockaddr_in> acceptConnectionGetAddr(SOCKET sock);
 struct sockaddr_in createAddress(u_long ip, int port);
 void receive(SOCKET sock, WSABUF wsaBuf, LPWSAOVERLAPPED olap, Routine callback);
 void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVERLAPPED overlapped, Routine callback);
