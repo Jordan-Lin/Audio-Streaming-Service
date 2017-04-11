@@ -8,6 +8,10 @@ Song::Song(const char *songInfoPkt) {
 
 }
 
+Song::~Song() {
+
+}
+
 int Song::getInfoPktLen(bool artwork) {
     if (artwork == false) {
         int offset = sizeof(PktIds::SONG_INFO) + title.size() + 1 + sizeof(int) +

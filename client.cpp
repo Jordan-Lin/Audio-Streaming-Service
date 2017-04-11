@@ -55,6 +55,8 @@ void Client::parse(int recvBytes) {
     int offset = 0;
     while (recvBytes) {
         tempBuffer += offset;
+        offset = 0;
+
         PktIds *pktId = reinterpret_cast<PktIds *>(tempBuffer);
         switch (*pktId) {
         case PktIds::USERS:
@@ -113,6 +115,7 @@ void Client::parse(int recvBytes) {
         case PktIds::SONG_QUEUE:
             {
                 SongQueue::get().empty();
+                int size = SongQueue::get().size();
                 int *start = reinterpret_cast<int *>(tempBuffer + sizeof(PktIds::SONG_QUEUE) +
                         sizeof(int));
                 int *end = reinterpret_cast<int *>(
@@ -148,10 +151,10 @@ void Client::parse(int recvBytes) {
 
 void Client::sendSongRequest(int songId) {
     SongRequest request;
-    request.songId = songId;
+    request.songId = songId + 1;
     WSABUF wsaBuf;
     wsaBuf.buf = reinterpret_cast<char *>(&request);
-    wsaBuf.len = sizeof(wsaBuf);
+    wsaBuf.len = sizeof(SongRequest);
 
     sendTCP(sock, wsaBuf);
 }

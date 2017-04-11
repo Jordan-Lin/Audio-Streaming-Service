@@ -9,7 +9,8 @@ class LockedQueue {
 public:
     void empty() {
         std::lock_guard<std::mutex> guard(lock);
-        queue.empty();
+        queue.clear();
+        int size = queue.size();
     }
 
     void push(T elem) {
@@ -29,7 +30,7 @@ public:
 
     int size() {
         std::lock_guard<std::mutex> guard(lock);
-        queue.size();
+        return queue.size();
     }
 
     std::vector<T> getAll() {

@@ -63,7 +63,7 @@ void ClientHandler::parse(int recvBytes) {
                 recvBytes -= sizeof(Join);
 
                 SongManager::get().sendSongList();
-                //SongQueue::get().sendSongQueue();
+                SongQueue::get().sendSongQueue();
             }
             break;
         case PktIds::SONG_REQUEST:

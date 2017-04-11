@@ -35,4 +35,5 @@ void Server::addDummySongs() {
     SongManager::get().addSong(song1);
     SongManager::get().addSong(song2);
     SongManager::get().addSong(song3);
+
 }
