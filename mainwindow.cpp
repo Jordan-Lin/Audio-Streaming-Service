@@ -324,6 +324,9 @@ void MainWindow::on_LV_SongList_doubleClicked(const QModelIndex &index)
     // Grab song from map using the row, get the song information to place a request.
     // Send Song request
     // Wait for update received from server to add queue'd song to list.
+    if (client != nullptr) {
+        client->sendSongRequest(song);
+    }
 }
 
 /*------------------------------------------------------------------------------

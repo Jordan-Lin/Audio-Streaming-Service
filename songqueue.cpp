@@ -34,7 +34,7 @@ void SongQueue::unlockedSendSongQueue() {
     memcpy(wsaBuf.buf, &pktId, sizeof(pktId));
     int offset = sizeof(pktId);
 
-    memcpy(wsaBuf.buf, &numSongs, sizeof(int));
+    memcpy(wsaBuf.buf + offset, &numSongs, sizeof(int));
     offset += sizeof(int);
 
     for (auto& song : queue) {

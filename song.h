@@ -20,10 +20,11 @@ public:
         : id(id), title(title), artist(artist), album(album) {
         hasArtwork = false;
     }
+
     void getInfoPktized(char *buf, bool withArtwork);
     std::vector<Audio> genAudioPkts();
     int getInfoPktLen(bool artwork);
-
+    ~Song();
     int getId() const {return id;}
     QString getTitle() const {return title;}
     QString getArtist() const {return artist;}
