@@ -1,6 +1,8 @@
 #ifndef PACKETS_H
 #define PACKETS_H
 
+#include <QtGlobal>
+
 #define AUDIO_BUFFER_SIZE 1024
 #define SONG_TITLE_SIZE 256
 #define SONG_ARTIST_SIZE 256
@@ -19,7 +21,8 @@ enum PktIds {
     SONGS,
     SONG_REQUEST,
     SONG_QUEUE,
-    USER_ID
+    USER_ID,
+    MUSIC_HEADER
 };
 
 typedef struct {
@@ -82,5 +85,22 @@ typedef struct {
     PktIds pktId = PktIds::USER_ID;
     int id;
 } UserId;
+
+typedef struct {
+    PktIds pktId = PktIds::MUSIC_HEADER;
+    char fileType[4];
+    qint32 fileSize;
+    char waveName[4];
+    char fmtName[3];
+    qint32 fmtLength;
+    short fmtType;
+    short numberOfChannels;
+    qint32 sampleRate;
+    qint32 sampleMultiply;
+    short bitsMultiply;
+    short bitsPerSample;
+    char dataHeader[4];
+    qint32 dataSize;
+} Header;
 
 #endif
