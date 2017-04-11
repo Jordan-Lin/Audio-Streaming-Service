@@ -166,6 +166,9 @@ void MainWindow::on_B_AddItemTEST_clicked()
     userVector.push_back("User");
     UpdateHandler::get()->emitUUV(userVector);
     */
+    User u("UserTest", 123);
+    UserManager::get().insert(123, u);
+    UpdateHandler::get()->emitUUV();
 }
 /*----------------------------------------------
  Test Buttons
@@ -252,7 +255,7 @@ void MainWindow::updatedQList()
 ------------------------------------------------------------------------------*/
 void MainWindow::updatedUList()
 {
-    DebugWindow::get()->logd("updateUList");
+    DebugWindow::get()->logd("  ");
     userList.clear();
     for (const auto& user : UserManager::get().getAll()) {
         userList << user.getUsername();
@@ -383,6 +386,13 @@ void MainWindow::on_B_Call_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_RunServer_clicked()
 {
+    ui->B_Call->setDisabled(true);
+    ui->B_Request->setDisabled(true);
+    ui->B_Download->setDisabled(true);
+    ui->B_Upload->setDisabled(true);
+    ui->B_Connect->setDisabled(true);
+    ui->L_SongName->setText("Running as server");
+    ui->L_SongTime->setText("Running as server");
     if (server == nullptr) {
         server = new Server();
     }
