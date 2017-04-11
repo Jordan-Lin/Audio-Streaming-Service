@@ -35,6 +35,10 @@ SOCKET acceptConnection(SOCKET sock) {
     return acceptSock;
 }
 
+std::pair<SOCKET, struct sockaddr_in> acceptConnectionGetAdd(SOCKET sock) {
+
+}
+
 bool connectSocket(SOCKET sock, struct sockaddr_in addr) {
     if (connect(sock, (sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0) {
         handleError(WSAGetLastError(), "connectSocket, connect", ErrorType::CONNECT_SOCKET);
