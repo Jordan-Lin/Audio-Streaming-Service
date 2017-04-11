@@ -102,7 +102,7 @@ void Client::parse(int recvBytes) {
                     int albumLen = *reinterpret_cast<int *>(tempBuffer + songOffset);
                     songOffset += sizeof(int);
                     QString album(tempBuffer + songOffset);
-                    songOffset += albumLen;
+                    songOffset += albumLen;                    
 
                     songOffset += sizeof(int);
                     Song song(songId, title, artist, album);

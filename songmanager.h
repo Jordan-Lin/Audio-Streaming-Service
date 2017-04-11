@@ -14,6 +14,9 @@ public:
     int genId() {return ++idCounter;}
     void addSong(Song song);
     void sendSongList();
+    
+    // Load current song list in directory
+    void LoadSongList();
 private:
     char buffer[LARGE_BUFFER_SIZE];
     int idCounter = 0;
