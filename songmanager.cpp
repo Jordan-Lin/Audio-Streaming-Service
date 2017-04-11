@@ -1,8 +1,10 @@
 #include "songmanager.h"
 #include "packets.h"
+#include <QDir>
 #include <winsock2.h>
 #include <windows.h>
 #include "clientmanager.h"
+#include "debugwindow.h"
 
 SongManager SongManager::instance;
 
@@ -39,4 +41,25 @@ void SongManager::unlockedSendSongList() {
     wsaBuf.len = offset;
 
     ClientManager::get().broadcast(wsaBuf);
+}
+
+void SongManager::LoadSongList()
+{
+    QString testAudioFilePath = "C:\\Users\\Jordan\\Desktop\\CommAudioWavFiles";                    // Test, change to directory next to app
+
+    DebugWindow::get()->logd(testAudioFilePath);
+    QDir testAudioDirectory;                                                                    // Test, change to directory next to app
+    testAudioDirectory.setPath(testAudioFilePath);
+    DebugWindow::get()->logd("Setting list filters");
+    QStringList filters;
+    filters << "*.wav";
+    testAudioDirectory.setNameFilters(filters);
+    testAudioDirectory.setSorting(QDir::Name);
+
+    DebugWindow::get()->logd("Getting entryList");
+    QStringList files = testAudioDirectory.entryList();
+    for (const QString& f : files) {
+        Song temp(SongManager::get().genId(), f, "Unknown", testAudioFilePath + f);
+        SongManager::get().addSong(temp);
+    }
 }

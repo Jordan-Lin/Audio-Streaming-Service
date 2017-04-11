@@ -25,6 +25,7 @@ DebugWindow::DebugWindow(QWidget *parent) :
     ui(new Ui::DebugWindow)
 {
     ui->setupUi(this);
+    QWidget::setWindowTitle("Debug Window");
 }
 
 DebugWindow::~DebugWindow()

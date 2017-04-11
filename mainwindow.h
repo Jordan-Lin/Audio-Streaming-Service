@@ -47,6 +47,9 @@ private slots:
     void on_B_Download_clicked();
     void on_B_Request_clicked();
 
+    // UI manipulation
+    void disableUI();
+
 //signals:
 //    void updateSongVector(std::vector<std::string> list);
 //    void updateQueueVector(std::vector<std::string> list);

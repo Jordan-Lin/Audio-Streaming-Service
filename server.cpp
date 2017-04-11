@@ -26,14 +26,14 @@ void Server::run() {
 }
 
 void Server::addDummySongs() {
-    Song song(SongManager::get().genId(), "Yolo", "GG", "reported");
-    Song song1(SongManager::get().genId(), "Title", "Artist", "Album");
-    Song song2(SongManager::get().genId(), "The", "Best", "Song");
-    Song song3(SongManager::get().genId(), "One", "Two", "Three");
+//    Song song(SongManager::get().genId(), "Yolo", "GG", "reported");
+//    Song song1(SongManager::get().genId(), "Title", "Artist", "Album");
+//    Song song2(SongManager::get().genId(), "The", "Best", "Song");
+//    Song song3(SongManager::get().genId(), "One", "Two", "Three");
 
-    SongManager::get().addSong(song);
-    SongManager::get().addSong(song1);
-    SongManager::get().addSong(song2);
-    SongManager::get().addSong(song3);
+//    SongManager::get().addSong(song);
+//    SongManager::get().addSong(song1);
+//    SongManager::get().addSong(song2);
+//    SongManager::get().addSong(song3);
 
 }

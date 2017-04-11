@@ -6,6 +6,7 @@
 #include "fileselectdialogue.h"
 
 #include <QT>
+#include <QDir>
 #include <QDebug>
 #include <QMessageBox>
 #include <QAbstractItemView>
@@ -166,6 +167,9 @@ void MainWindow::on_B_AddItemTEST_clicked()
     userVector.push_back("User");
     UpdateHandler::get()->emitUUV(userVector);
     */
+    User u("UserTest", 123);
+    UserManager::get().insert(123, u);
+    UpdateHandler::get()->emitUUV();
 }
 /*----------------------------------------------
  Test Buttons
@@ -252,7 +256,7 @@ void MainWindow::updatedQList()
 ------------------------------------------------------------------------------*/
 void MainWindow::updatedUList()
 {
-    DebugWindow::get()->logd("updateUList");
+    DebugWindow::get()->logd("  ");
     userList.clear();
     for (const auto& user : UserManager::get().getAll()) {
         userList << user.getUsername();
@@ -386,9 +390,17 @@ void MainWindow::on_B_Call_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_RunServer_clicked()
 {
+    // Change UI Settings, disable unneeded sections for server.
+    disableUI();
+
+    // Get all files in song folder
+    SongManager::get().LoadSongList();
+
+    // Initialize the server.
     if (server == nullptr) {
         server = new Server();
     }
+
 }
 
 /*------------------------------------------------------------------------------
@@ -465,4 +477,44 @@ void MainWindow::on_B_Request_clicked()
 
 /*----------------------------------------------
  Button press slots
+----------------------------------------------*/
+
+/*----------------------------------------------
+ UI Manipulation
+----------------------------------------------*/
+/*------------------------------------------------------------------------------
+-- FUNCTION:
+--
+-- DATE:    April 9th, 2017
+--
+-- DESIGNER: Jordan Lin
+--
+-- PROGRAMMER: Jordan Lin
+--
+-- INTERFACE:
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES:
+--
+------------------------------------------------------------------------------*/
+void MainWindow::disableUI() {
+    // Change UI Settings, disable unneeded sections for server.
+    ui->B_Call->setDisabled(true);
+    ui->B_Request->setDisabled(true);
+    ui->B_Download->setDisabled(true);
+    ui->B_Upload->setDisabled(true);
+    ui->B_Connect->setDisabled(true);
+    ui->L_Album->hide();
+    ui->L_Artist->hide();
+    ui->Artist->hide();
+    ui->Album->hide();
+    QWidget::setWindowTitle("Server");
+    ui->L_SongName->setText("Running as server");
+    ui->L_SongTime->setText("Running as server");
+}
+/*----------------------------------------------
+ UI Manipulation
 ----------------------------------------------*/
