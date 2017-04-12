@@ -7,6 +7,7 @@
 #include "routinestructs.h"
 #include <string>
 #include "defines.h"
+#include "songstreamer.h"
 
 class ClientHandler {
 public:

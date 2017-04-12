@@ -11,7 +11,7 @@ public:
     SongStreamReceiver(int listenPort);
     void init();
     static void CALLBACK receiveSongStreamRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags);
-    void handleSongPkt();
+    void handleSongPkt(DWORD recvBytes);
 private:
     HANDLE gotPacket;
     int sock;

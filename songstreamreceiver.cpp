@@ -2,6 +2,7 @@
 #include "utilities.h"
 #include "debugwindow.h"
 #include <QDebug>
+#include "audiomanager.h"
 
 SongStreamReceiver::SongStreamReceiver(int listenPort) {
     sock = createSocket(SOCK_DGRAM);
@@ -12,7 +13,7 @@ SongStreamReceiver::SongStreamReceiver(int listenPort) {
 }
 
 void SongStreamReceiver::init() {
-    joinMulticast(sock);
+    //joinMulticast(sock);
     olapWrap.receiver = this;
     receive(sock, wsaBuf, &olapWrap.olap, receiveSongStreamRoutine);
     while(true) {
@@ -27,13 +28,39 @@ void CALLBACK SongStreamReceiver::receiveSongStreamRoutine(DWORD err, DWORD byte
         DebugWindow::get()->logd("receiveSongStreamRoutine succeeded");
     }
 
-    reinterpret_cast<SongStreamReceiverOlapWrap *>(overlapped)->receiver->handleSongPkt();
+    reinterpret_cast<SongStreamReceiverOlapWrap *>(overlapped)->receiver->handleSongPkt(bytesRecv);
 }
 
-void SongStreamReceiver::handleSongPkt() {
+void SongStreamReceiver::handleSongPkt(DWORD recvBytes) {
+    char *tempBuffer = buffer;
+    int offset = 0;
+    while (recvBytes) {
+        tempBuffer += offset;
+        offset = 0;
+        int *id = reinterpret_cast<int *>(tempBuffer);
+        switch (*id) {
+        case AUDIO:
+            {
+                Audio *audio = reinterpret_cast<Audio *>(tempBuffer);
+                audioManager::get().appender(QByteArray(audio->buffer, audio->len));
+                audioManager::get().playSong();
+            }
+            offset += sizeof(Audio);
+            break;
+        case AUDIO_FORMAT_ID:
+            {
+                HeaderInfo *info = reinterpret_cast<HeaderInfo *>(tempBuffer);
+                std::thread audioThread(&audioManager::initAudio,
+                        &audioManager::get(), info->bitsPerSample,
+                        info->sampleRate, info->numberOfChannels);
+                audioThread.detach();
+            }
+            offset += sizeof(HeaderInfo);
+            break;
+        }
+        recvBytes -= offset;
+    }
     SetEvent(gotPacket);
-    Audio *audio = reinterpret_cast<Audio *>(buffer);
-    DebugWindow::get()->logpi(addNull(audio->buffer, audio->len));
     wsaBuf.buf = buffer;
     wsaBuf.len = sizeof(Audio);
     olapWrap.receiver = this;

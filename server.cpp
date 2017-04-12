@@ -11,6 +11,10 @@ Server::Server() {
     state = ServerState::INITIALIZING;
     std::thread serverThread(&Server::run, this);
     serverThread.detach();
+
+    streamer = new SongStreamer();
+    std::thread streamerThread(&SongStreamer::initStream, streamer);
+    streamerThread.detach();
 }
 
 void Server::run() {

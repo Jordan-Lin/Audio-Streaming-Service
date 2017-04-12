@@ -112,6 +112,14 @@ void multicast(SOCKET sock, LPWSABUF wsaBuf, struct sockaddr_in& addr, LPWSAOVER
 
 }
 
+void sendUDP(SOCKET sock, WSABUF& wsaBuf, struct sockaddr_in addr) {
+    DWORD unusedSendBytes = 0;
+    if (WSASendTo(sock, &wsaBuf, 1, &unusedSendBytes, 0, (struct sockaddr *)&addr,
+            sizeof(struct sockaddr_in), NULL, NULL)) {
+        handleError(WSAGetLastError(), "WSASend", ErrorType::SEND_UDP);
+    }
+}
+
 void joinMulticast(SOCKET sock) {
     struct ip_mreq multicastInterface;
     multicastInterface.imr_multiaddr.s_addr = inet_addr("234.5.6.7");
@@ -172,6 +180,8 @@ void handleError(int errCode, const char *msg, ErrorType err) {
     case ErrorType::ACCEPT_CONNECTION:
         break;
     case ErrorType::CONNECT_SOCKET:
+        break;
+    case ErrorType::SEND_UDP:
         break;
     }
 }

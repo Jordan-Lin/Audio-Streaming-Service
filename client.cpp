@@ -19,6 +19,14 @@ Client::Client(QString serverIp, QString username) {
 
     std::thread clientThread(&Client::run, this, username);
     clientThread.detach();
+
+    receiver = new SongStreamReceiver(6555);
+    std::thread receiverThread(&SongStreamReceiver::init, receiver);
+    receiverThread.detach();
+}
+
+Client::~Client() {
+    delete receiver;
 }
 
 void Client::run(QString username) {
@@ -61,7 +69,6 @@ void Client::parse(int recvBytes) {
         switch (*pktId) {
         case PktIds::USERS:
             {
-                UserManager::get().empty();
                 UserInfo *start = reinterpret_cast<UserInfo *>(tempBuffer + sizeof(PktIds::USERS) + sizeof(int));
                 UserInfo *end = reinterpret_cast<UserInfo *>(
                             start + *reinterpret_cast<int *>(

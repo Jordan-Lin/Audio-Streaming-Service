@@ -34,7 +34,7 @@ public:
     QString getTitle() const {return title;}
     QString getArtist() const {return artist;}
     QString getAlbum() const {return album;}
-    
+    QString getDir() const {return audioDir;}
 
 private:
     int id;

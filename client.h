@@ -7,14 +7,17 @@
 #include "defines.h"
 #include <QString>
 #include "song.h"
+#include "songstreamreceiver.h"
 
 class Client {
 public:
     Client(QString serverIp, QString username);
+    ~Client();
     static void receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
     void parse(int recvBytes);
     void sendSongRequest(int songId);
 private:
+    SongStreamReceiver *receiver;
     SOCKET sock;
     WSABUF wsaBuf;
     ClientOlap olapWrap;

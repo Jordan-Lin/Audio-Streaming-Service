@@ -56,6 +56,8 @@ private slots:
 //    void updateQueueVector(std::vector<std::string> list);
 //    void updateUserVector(std::vector<std::string> list);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
