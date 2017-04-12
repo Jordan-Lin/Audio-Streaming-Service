@@ -81,7 +81,6 @@ void ClientHandler::parse(int recvBytes) {
             break;
         case PktIds::DOWNLOAD_REQUEST:
             {
-                DebugWindow::get()->logd("received download request.");
                 DownloadRequest *request = reinterpret_cast<DownloadRequest *>(tempBuffer);
                 QByteArray data = audioManager::get().loadSong(SongManager::get().at(request->songId).getDir());
                 char temp[sizeof(PktIds::DOWNLOAD) + sizeof(int) + sizeof(int)];

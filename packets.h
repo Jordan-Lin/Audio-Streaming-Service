@@ -6,7 +6,7 @@
 #include <windows.h>
 #include "defines.h"
 
-#define AUDIO_BUFFER_SIZE 10000
+#define AUDIO_BUFFER_SIZE 1000
 #define SONG_TITLE_SIZE 256
 #define SONG_ARTIST_SIZE 256
 #define MAX_USERNAME 64

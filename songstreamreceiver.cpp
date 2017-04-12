@@ -23,9 +23,7 @@ void SongStreamReceiver::init() {
 
 void CALLBACK SongStreamReceiver::receiveSongStreamRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags) {
     if (err != 0) {
-        DebugWindow::get()->logd(QString("receiveSongStreamRoutine failed, error code: ") + itoq(err));
     } else {
-        DebugWindow::get()->logd("receiveSongStreamRoutine succeeded");
     }
 
     reinterpret_cast<SongStreamReceiverOlapWrap *>(overlapped)->receiver->handleSongPkt(bytesRecv);
