@@ -11,11 +11,11 @@
 SongStreamer::SongStreamer() {
     sock = createSocket(SOCK_DGRAM);
     bindSocket(sock, createAddress(htonl(INADDR_ANY), 0));
-    addr = createAddress(inet_addr("127.0.0.1"), htons(6555));
+    addr = createAddress(inet_addr("234.5.6.8"), htons(6555));
 
-    //joinMulticast(sock);
-    //traverseMultiple(sock);
-    //disableLoopback(sock);
+    joinMulticast(sock);
+    traverseMultiple(sock);
+    disableLoopback(sock);
 }
 
 void SongStreamer::initStream() {

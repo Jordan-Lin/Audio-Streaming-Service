@@ -13,7 +13,7 @@ SongStreamReceiver::SongStreamReceiver(int listenPort) {
 }
 
 void SongStreamReceiver::init() {
-    //joinMulticast(sock);
+    joinMulticast(sock);
     olapWrap.receiver = this;
     receive(sock, wsaBuf, &olapWrap.olap, receiveSongStreamRoutine);
     while(true) {
