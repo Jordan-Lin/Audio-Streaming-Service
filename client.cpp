@@ -11,6 +11,7 @@
 #include <QIODevice>
 #include <QTextStream>
 #include <QFile>
+#include "audiomanager.h"
 
 Client::Client(QString serverIp, QString username) {
     std::string strServerIp(serverIp.toStdString());
@@ -170,8 +171,7 @@ void Client::parse(int recvBytes) {
                 QFile file(fileName);
                 if (file.open(QIODevice::ReadWrite)) {
                     DebugWindow::get()->logd("writing to file");
-                    QTextStream stream(&file);
-                    stream << data;
+                    file.write(data);
                 } else {
                     DebugWindow::get()->logd("failed to file");
 
@@ -208,5 +208,27 @@ void Client::sendDownloadRequest(int songId) {
     wsaBuf.buf = reinterpret_cast<char *>(&request);
     wsaBuf.len = sizeof(DownloadRequest);
 
+    sendTCP(sock, wsaBuf);
+}
+
+void Client::sendUploadRequest(QString title, QString album, QString artist, QString fileName) {
+    Upload upload;
+    std::string strTitle = title.toStdString();
+    std::string strArtist = artist.toStdString();
+    std::string strAlbum = album.toStdString();
+    const char *cStrTitle = strTitle.c_str();
+    const char *cStrArtist = strArtist.c_str();
+    const char *cStrAlbum = strAlbum.c_str();
+    memcpy(upload.title, cStrTitle, sizeof(upload.title));
+    memcpy(upload.artist, cStrArtist, sizeof(upload.artist));
+    memcpy(upload.album, cStrAlbum, sizeof(upload.album));
+    QByteArray data = audioManager::get().loadSong(fileName);
+    upload.len = data.size();
+    WSABUF wsaBuf;
+    wsaBuf.buf = reinterpret_cast<char *>(&upload);
+    wsaBuf.len = sizeof(Upload);
+    sendTCP(sock, wsaBuf);
+    wsaBuf.buf = data.data();
+    wsaBuf.len = data.size();
     sendTCP(sock, wsaBuf);
 }

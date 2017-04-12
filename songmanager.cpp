@@ -45,7 +45,7 @@ void SongManager::unlockedSendSongList() {
 
 void SongManager::LoadSongList()
 {
-    QString testAudioFilePath = "C:\\Users\\Administrator\\Desktop\\CommAudioWavFiles";                    // Test, change to directory next to app
+    QString testAudioFilePath = "C:\\Users\\Brody McCrone\\Desktop\\CommAudioWavFiles";                    // Test, change to directory next to app
 
     DebugWindow::get()->logd(testAudioFilePath);
     QDir testAudioDirectory;                                                                    // Test, change to directory next to app

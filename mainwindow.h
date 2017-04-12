@@ -36,6 +36,7 @@ private slots:
     void updatedSList();
     void updatedQList();
     void updatedUList();
+    void uploadS();
 
 
     // Button clicked event

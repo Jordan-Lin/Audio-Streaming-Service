@@ -222,6 +222,33 @@ void MainWindow::updatedUList()
     UList->setStringList(userList);
     ui->LV_UserList->setModel(UList);
 }
+
+/*------------------------------------------------------------------------------
+-- FUNCTION:
+--
+-- DATE:    April 9th, 2017
+--
+-- DESIGNER: Jordan Lin
+--
+-- PROGRAMMER: Jordan Lin
+--
+-- INTERFACE:
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES:
+--
+------------------------------------------------------------------------------*/
+void MainWindow::uploadS() {
+    QString title = FileSelectDialogue::get()->getTitle();
+    QString album = FileSelectDialogue::get()->getAlbum();
+    QString artist = FileSelectDialogue::get()->getArtist();
+    QString filePath = FileSelectDialogue::get()->getFilePath();
+    client->sendUploadRequest(title, album, artist, filePath);
+}
+
 /*----------------------------------------------
  Update Slots
 ----------------------------------------------*/

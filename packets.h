@@ -13,6 +13,7 @@
 #define MAX_TITLE 64
 #define MAX_ARTIST 64
 #define MAX_ALBUM 64
+#define UPLOAD_STRING 256
 
 #include "defines.h"
 
@@ -29,7 +30,8 @@ enum PktIds {
     MUSIC_HEADER,
     HEADER_INFO,
     DOWNLOAD_REQUEST,
-    DOWNLOAD
+    DOWNLOAD,
+    UPLOAD
 };
 
 typedef struct {
@@ -116,5 +118,13 @@ typedef struct {
     PktIds pktId = PktIds::DOWNLOAD_REQUEST;
     int songId;
 } DownloadRequest;
+
+typedef struct {
+    PktIds pktId = PktIds::UPLOAD;
+    char title[UPLOAD_STRING];
+    char artist[UPLOAD_STRING];
+    char album[UPLOAD_STRING];
+    int len;
+} Upload;
 
 #endif

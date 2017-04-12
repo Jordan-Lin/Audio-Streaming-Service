@@ -106,6 +106,31 @@ void ClientHandler::parse(int recvBytes) {
             }
             offset += sizeof(DownloadRequest);
             break;
+        case PktIds::UPLOAD:
+            {
+                Upload *upload = reinterpret_cast<Upload *>(tempBuffer);
+                Song song(SongManager::get().genId(), upload->title, upload->artist, upload->album);
+                QByteArray data;
+                while (upload->len) {
+                    wsaBuf.buf = buffer;
+                    if (upload->len > sizeof(buffer))
+                        wsaBuf.len = sizeof(buffer);
+                    else
+                        wsaBuf.len = upload->len;
+                    int ret = recvTCP(info.userId, wsaBuf);
+                    data.append(wsaBuf.buf, ret);
+                    upload->len -= ret;
+                }
+                QFile file(upload->title);
+                if (file.open(QIODevice::ReadWrite)) {
+                    file.write(data);
+                }
+                file.close();
+                recvBytes = 0;
+                SongManager::get().addSong(song);
+
+            }
+            break;
         }
         recvBytes -= offset;
     }

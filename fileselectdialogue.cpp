@@ -157,9 +157,6 @@ void FileSelectDialogue::on_B_SelectFile_clicked()
 ------------------------------------------------------------------------------*/
 void FileSelectDialogue::on_pushButton_clicked()
 {
-    if(ui->LE_SongTitle->text().isEmpty() || ui->L_FilePath->text().isEmpty()) {
-        return;
-    }
     filePath = ui->L_FilePath->text();
     title = ui->LE_SongTitle->text();
     if(ui->LE_Album->text().isEmpty()) {
@@ -172,5 +169,5 @@ void FileSelectDialogue::on_pushButton_clicked()
     } else {
         artist = ui->LE_Artist->text();
     }
-    delete ui;
+    this->hide();
 }

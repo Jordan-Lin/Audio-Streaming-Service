@@ -17,11 +17,13 @@ public:
     void emitUSV();
     void emitUQV();
     void emitUUV();
+    void emitUpload();
 
 signals:
     void updateSongVector();
     void updateQueueVector();
     void updateUserVector();
+    void uploadSignal();
     void signalSongTitle(QString song);
 
 public:

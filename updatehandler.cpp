@@ -142,3 +142,26 @@ void UpdateHandler::emitUUV()
 {
     emit updateUserVector();
 }
+
+/*------------------------------------------------------------------------------
+-- FUNCTION: emitUUV
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Jordan Lin
+--
+-- PROGRAMMER: Jordan Lin
+--
+-- INTERFACE: void emitUUV()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES:
+--  Emit Update User Vector signal
+------------------------------------------------------------------------------*/
+void UpdateHandler::emitUpload()
+{
+    emit uploadSignal();
+}
