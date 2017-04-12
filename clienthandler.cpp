@@ -1,3 +1,24 @@
+/*------------------------------------------------------------------------------
+-- SOURCE FILE: clienthandler.cpp
+--
+-- PROGRAM: CommAudio
+--
+-- FUNCTIONS:
+--          void init();
+    static void CALLBACK receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
+    void handleReceive(int recvBytes);
+    void parse(int recvBytes);
+--
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- NOTES: Handles client functions
+--
+------------------------------------------------------------------------------*/
 #include "clienthandler.h"
 
 #include <thread>
@@ -9,6 +30,24 @@
 #include "songqueue.h"
 #include "audiomanager.h"
 
+/*------------------------------------------------------------------------------
+-- FUNCTION:
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE:
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES:
+--
+------------------------------------------------------------------------------*/
 ClientHandler::ClientHandler(SOCKET sock, u_long ip) {
     info.userId = sock;
     info.ip = ip;
