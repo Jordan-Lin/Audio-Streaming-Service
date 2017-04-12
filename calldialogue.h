@@ -78,7 +78,6 @@ private:
     SOCKET callSock;
     char voiceDataBuff[MAX_BUFF_SIZE];
     sockaddr_in sockAdd;
-    std::atomic<bool> receiving;
 
     // Audio input/output variables
     QAudioDeviceInfo m_Inputdevice;
