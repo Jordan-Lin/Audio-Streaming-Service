@@ -82,7 +82,7 @@ QByteArray audioManager::loadAudio(QString fileName) {
     return song;
 }
 
-void audioManager::playAudio(short bits, qint32 sample, QByteArray audio) {
+void audioManager::playAudio(short bits, qint32 sample, short channels, QByteArray audio) {
 
     audio_data = audio;
     moreData = "";
@@ -94,7 +94,7 @@ void audioManager::playAudio(short bits, qint32 sample, QByteArray audio) {
     format.setCodec("audio/pcm");
     format.setSampleSize(bits);
     format.setSampleRate(sample / 1000 * 5);
-    format.setChannelCount(2);
+    format.setChannelCount(channels * 2);
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
 
