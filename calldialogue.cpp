@@ -495,7 +495,7 @@ void CallDialogue::on_B_HangUp_clicked()
     DebugWindow::get()->logd("Closing Call dialogue.\n");
     receiving = false;
     m_output->close();
-    m_input->close();
+    if(m_input != NULL) m_input->close();
     ui->L_Contact->setText("Disconnected");
     closesocket(callSock);
 }

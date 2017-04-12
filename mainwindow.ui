@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>574</width>
-    <height>490</height>
+    <height>465</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -174,33 +174,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="B_AddItemTEST">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>400</y>
-      <width>80</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add List Items TEST</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>410</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Audio Test</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -266,7 +240,7 @@
      <x>0</x>
      <y>0</y>
      <width>574</width>
-     <height>17</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

@@ -36,6 +36,7 @@ private slots:
     void updatedSList();
     void updatedQList();
     void updatedUList();
+    void uploadS();
 
 
     // Button clicked event
@@ -54,8 +55,6 @@ private slots:
 //    void updateSongVector(std::vector<std::string> list);
 //    void updateQueueVector(std::vector<std::string> list);
 //    void updateUserVector(std::vector<std::string> list);
-
-    void on_pushButton_clicked();
 
     void on_LV_SongList_clicked(const QModelIndex &index);
 

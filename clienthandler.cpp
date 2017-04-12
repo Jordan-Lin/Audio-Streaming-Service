@@ -7,6 +7,7 @@
 #include "clientmanager.h"
 #include "songmanager.h"
 #include "songqueue.h"
+#include "audiomanager.h"
 
 ClientHandler::ClientHandler(SOCKET sock, u_long ip) {
     info.userId = sock;
@@ -44,12 +45,16 @@ void ClientHandler::handleReceive(int recvBytes) {
 }
 
 void ClientHandler::parse(int recvBytes) {
-    PktIds *pktId = reinterpret_cast<PktIds *>(buffer);
+    char *tempBuffer = buffer;
+    int offset = 0;
     while (recvBytes) {
+        tempBuffer += offset;
+        offset = 0;
+        PktIds *pktId = reinterpret_cast<PktIds *>(tempBuffer);
         switch (*pktId) {
         case PktIds::JOIN:
             {
-                Join *join = reinterpret_cast<Join *>(buffer);
+                Join *join = reinterpret_cast<Join *>(tempBuffer);
                 DebugWindow::get()->logd(QString("THIS PERSON JOINED: ") + join->username);
 
                 UserId idPkt;
@@ -61,24 +66,79 @@ void ClientHandler::parse(int recvBytes) {
 
                 memcpy(info.username, join->username, strlen(join->username) + 1);
                 ClientManager::get().addClient(this);
-                recvBytes -= sizeof(Join);
 
                 SongManager::get().sendSongList();
                 SongQueue::get().sendSongQueue();
             }
+            offset += sizeof(Join);
             break;
         case PktIds::SONG_REQUEST:
             {
-                SongRequest *request = reinterpret_cast<SongRequest *>(buffer);
+                SongRequest *request = reinterpret_cast<SongRequest *>(tempBuffer);
                 SongQueue::get().addSong(SongManager::get().at(request->songId));
+            }
+            offset += sizeof(SongRequest);
+            break;
+        case PktIds::DOWNLOAD_REQUEST:
+            {
+                DownloadRequest *request = reinterpret_cast<DownloadRequest *>(tempBuffer);
+                QByteArray data = audioManager::get().loadSong(SongManager::get().at(request->songId).getDir());
+                char temp[sizeof(PktIds::DOWNLOAD) + sizeof(int) + sizeof(int)];
+                PktIds pktId = PktIds::DOWNLOAD;
+                int len = data.size();
+                memcpy(temp, &pktId, sizeof(PktIds::DOWNLOAD));
+                memcpy(temp + sizeof(PktIds::DOWNLOAD), &request->songId, sizeof(int));
+                memcpy(temp + sizeof(PktIds::DOWNLOAD) + sizeof(int), &len, sizeof(int));
+                WSABUF wsaBuf;
+                wsaBuf.buf = temp;
+                wsaBuf.len = sizeof(temp);
 
-                recvBytes -= sizeof(SongRequest);
+                sendTCP(info.userId, wsaBuf);
+
+
+
+                DebugWindow::get()->logd(QString("len: ") + itoq(len));
+
+                wsaBuf.buf = data.data();
+                wsaBuf.len = data.size();
+                sendTCP(info.userId, wsaBuf);
+            }
+            offset += sizeof(DownloadRequest);
+            break;
+        case PktIds::UPLOAD:
+            {
+                Upload *upload = reinterpret_cast<Upload *>(tempBuffer);
+                QByteArray data;
+                QString audioDir(QString(upload->title) + ".wav");
+                Song song(SongManager::get().genId(), upload->title, upload->artist, upload->album, audioDir);
+                int len = upload->len;
+                while (len) {
+                    wsaBuf.buf = buffer;
+                    if (len > sizeof(buffer))
+                        wsaBuf.len = sizeof(buffer);
+                    else
+                        wsaBuf.len = len;
+                    int ret = recvTCP(info.userId, wsaBuf);
+                    data.append(wsaBuf.buf, ret);
+                    len -= ret;
+                }
+                QFile file(audioDir);
+                if (file.open(QIODevice::ReadWrite)) {
+                    file.write(data);
+                }
+                file.close();
+                recvBytes = 0;
+                SongManager::get().addSong(song);
+
             }
             break;
         }
+        recvBytes -= offset;
     }
 
     wsaBuf.buf = buffer;
     wsaBuf.len = sizeof(buffer);
     receive(info.userId, wsaBuf, &olapWrap.olap, receiveRoutine);
 }
+
+

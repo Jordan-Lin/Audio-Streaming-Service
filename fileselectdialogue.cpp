@@ -21,6 +21,7 @@
 #include "fileselectdialogue.h"
 #include "ui_fileselectdialogue.h"
 #include "utilities.h"
+#include "updatehandler.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -132,7 +133,7 @@ void FileSelectDialogue::on_B_SelectFile_clicked()
     }
 
     ui->L_FilePath->setText(fileName);
-    filePath = fileName.toStdString();
+
     // Change File Path name to selected file path.
     // write to buffer and send to server for upload.
 }
@@ -158,9 +159,6 @@ void FileSelectDialogue::on_B_SelectFile_clicked()
 ------------------------------------------------------------------------------*/
 void FileSelectDialogue::on_pushButton_clicked()
 {
-    if(ui->LE_SongTitle->text().isEmpty() || ui->L_FilePath->text().isEmpty()) {
-        return;
-    }
     filePath = ui->L_FilePath->text();
     title = ui->LE_SongTitle->text();
     if(ui->LE_Album->text().isEmpty()) {
@@ -173,5 +171,6 @@ void FileSelectDialogue::on_pushButton_clicked()
     } else {
         artist = ui->LE_Artist->text();
     }
-    delete ui;
+    UpdateHandler::get()->emitUpload();
+    this->hide();
 }

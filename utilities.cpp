@@ -101,6 +101,15 @@ SOCKET createSocket(int type) {
     return sock;
 }
 
+int recvTCP(SOCKET sock, WSABUF& wsaBuf) {
+    DWORD bytesRecv = 0;
+    DWORD flags = 0;
+    if (WSARecv(sock, &wsaBuf, 1, &bytesRecv, &flags, NULL, NULL) == SOCKET_ERROR) {
+        handleError(WSAGetLastError(), "recvTCP, WSARecv", ErrorType::RECV_TCP);
+    }
+    return bytesRecv;
+}
+
 /*------------------------------------------------------------------------------
 -- FUNCTION: acceptConnection
 --

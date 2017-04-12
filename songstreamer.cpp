@@ -105,7 +105,9 @@ void SongStreamer::initStream() {
         HANDLE tempEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
         DebugWindow::get()->logd(QString(" TIME : ")  + itoq(1000 * audioManager::get().durationCalc(
                 audioManager::get().loadHeader(song.getDir()))));
-        WaitForSingleObject(tempEvent, 1000 * audioManager::get().durationCalc(
+        DebugWindow::get()->logd(QString("duration: ") + (1000 * audioManager::get().durationCalc(
+                                     audioManager::get().loadHeader(song.getDir()))));
+        Sleep(1000 * audioManager::get().durationCalc(
                 audioManager::get().loadHeader(song.getDir())) - getDuration(begin, end)); //len of song
         SongQueue::get().popSong();
     }
@@ -131,9 +133,7 @@ void SongStreamer::initStream() {
 ------------------------------------------------------------------------------*/
 void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags) {
     if (err != 0) {
-        DebugWindow::get()->logd(QString("streamSongRoutine send failed, error code: ") + itoq(err));
     } else {
-        DebugWindow::get()->logd("streamSongRoutine send succeeded");
     }
 
     reinterpret_cast<SongStreamerOlapWrap *>(overlapped)->sender->streamSong();
@@ -193,9 +193,6 @@ void SongStreamer::packetizeNextSongSection() {
         audioPkt.len = AUDIO_BUFFER_SIZE;
     }
     memcpy(audioPkt.buffer, data.data() + bytesSent, audioPkt.len);
-    DebugWindow::get()->logpo(addNull(data.data() + bytesSent, audioPkt.len));
-    //DebugWindow::get()->logpo(QString("PacketStart:") + addNull(audioPkt.buffer, audioPkt.len) + ":PacketEnd");
     wsaBuf.len = sizeof(Audio);
-    DebugWindow::get()->logd(QString("wsaBuf.len = ") + itoq(wsaBuf.len) + ", audioPkt.len = " + itoq(audioPkt.len));
     wsaBuf.buf = reinterpret_cast<char *>(&audioPkt);
 }
