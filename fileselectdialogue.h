@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+#include "song.h"
+
 namespace Ui {
 class FileSelectDialogue;
 }
@@ -17,22 +19,24 @@ public:
 
     static FileSelectDialogue *get();
 
-    std::string getFilePath() { return filePath; }
-    std::string getTitle() { return title; }
-    std::string getArtist() { return artist; }
-    std::string getAlbum() { return album; }
+    QString getFilePath() { return filePath; }
+    QString getTitle() { return title; }
+    QString getArtist() { return artist; }
+    QString getAlbum() { return album; }
 
 private slots:
     void on_B_SelectFile_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::FileSelectDialogue *ui;
 
     static FileSelectDialogue *instance;
-    std::string filePath;
-    std::string title;
-    std::string artist;
-    std::string album;
+    QString filePath;
+    QString title;
+    QString artist;
+    QString album;
 };
 
 #endif // FILESELECTDIALOGUE_H

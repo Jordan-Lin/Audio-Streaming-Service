@@ -43,7 +43,6 @@ private slots:
     void on_B_Connect_clicked();
     void on_B_Call_clicked();
     void on_B_RunServer_clicked();
-    void on_B_AddItemTEST_clicked();
     void on_B_Upload_clicked();
     void on_B_Download_clicked();
     void on_B_Request_clicked();
@@ -55,6 +54,8 @@ private slots:
 //    void updateSongVector(std::vector<std::string> list);
 //    void updateQueueVector(std::vector<std::string> list);
 //    void updateUserVector(std::vector<std::string> list);
+
+    void on_LV_SongList_clicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;
