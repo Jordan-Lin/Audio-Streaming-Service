@@ -1,3 +1,33 @@
+/*------------------------------------------------------------------------------
+-- SOURCE FILE:  calldialogue.cpp
+--
+-- PROGRAM: CommAudio
+--
+-- FUNCTIONS:
+--          explicit CallDialogue(QWidget *parent = 0);
+            ~CallDialogue();
+            static CallDialogue *get();
+            void init();
+            void closeEvent(QCloseEvent *event);
+            void reject();
+            void initializeAudio();
+            void createAudioInput();
+            void createAudioOutput();
+            void callConnect();
+            void receive();
+            int ApplyVolumeToSample(short iSample);
+--
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Trista Huang, Jordan Lin
+--
+-- PROGRAMMER: Trista Huang, Jordan Lin
+--
+-- NOTES: This is the singleton that handles client to client VOIP
+--
+------------------------------------------------------------------------------*/
+
 #include "calldialogue.h"
 #include "ui_calldialogue.h"
 #include <QMessageBox>
@@ -213,7 +243,6 @@ void CallDialogue::createAudioInput()
 void CallDialogue::readMore()
 {
     int nBufSize = 4096;
-    char * buf = (char*)malloc(nBufSize) ;
 
     if(!m_audioInput)
         return;
@@ -266,7 +295,6 @@ void CallDialogue::readMore()
 void CallDialogue::receive(){
     int recvRet;
     char buf[4096];
-    struct sockaddr_in sin;
     int sin_len;
 
     sin_len = sizeof(sockAdd);

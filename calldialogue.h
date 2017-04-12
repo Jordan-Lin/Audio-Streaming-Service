@@ -36,31 +36,22 @@ public:
     void closeEvent(QCloseEvent *event);
     void reject();
 
-//    const int getIndex() { return index; }
     const std::string getContact() { return contact; }
     const SOCKET getSocket() { return callSock; }
-//    void setIndex(const int& i);
 
     void setContact(const std::string& c) { contact = c; }
     void setIp(const u_long i) { ip = i; }
     void setSocket(const SOCKET& s) { callSock = s; }
-
-//    void print(std::string p) { qDebug() << QString(p); }
-
-private:
     void initializeAudio();
     void createAudioInput();
     void createAudioOutput();
     void callConnect();
     void receive();
-
     int ApplyVolumeToSample(short iSample);
 
 private slots:
     void readMore();
-//    void on_pushButton_clicked();
     void on_horizontalSlider_valueChanged(int value);
-
     void on_B_HangUp_clicked();
 
 private:
