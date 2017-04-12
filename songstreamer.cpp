@@ -1,3 +1,25 @@
+/*------------------------------------------------------------------------------
+-- SOURCE FILE: songstreamer.cpp
+--
+-- PROGRAM: CommAudio
+--
+-- FUNCTIONS:
+--          SongStreamer();
+            ~SongStreamer();
+            static void CALLBACK streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags);
+            void SongStreamer::initStream();
+            void SongStreamer::streamSong();
+            void packetizeNextSongSection();
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- NOTES: Functions to stream the songs.
+--
+------------------------------------------------------------------------------*/
 #include "songstreamer.h"
 #include <string.h>
 #include <QDebug>
@@ -9,6 +31,24 @@
 #include "songqueue.h"
 #include "gettime.h"
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: SongStreamer::SongStreamer()
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: SongStreamer::SongStreamer()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Constructor for SongStreamer, join to a multicast network.
+--
+------------------------------------------------------------------------------*/
 SongStreamer::SongStreamer() {
     sock = createSocket(SOCK_DGRAM);
     bindSocket(sock, createAddress(htonl(INADDR_ANY), 0));
@@ -19,6 +59,24 @@ SongStreamer::SongStreamer() {
     disableLoopback(sock);
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void SongStreamer::initStream()
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void SongStreamer::initStream()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Starts the streaming of songs; time the operation.
+--
+------------------------------------------------------------------------------*/
 void SongStreamer::initStream() {
     songSent = CreateEvent(NULL, FALSE, FALSE, NULL);
 
@@ -55,6 +113,24 @@ void SongStreamer::initStream() {
     }
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags)
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: The routine function for streaming songs.
+--
+------------------------------------------------------------------------------*/
 void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags) {
     if (err != 0) {
     } else {
@@ -63,6 +139,24 @@ void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAO
     reinterpret_cast<SongStreamerOlapWrap *>(overlapped)->sender->streamSong();
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void SongStreamer::streamSong()
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void SongStreamer::streamSong()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Stream the section of the song that has been packetized.
+--
+------------------------------------------------------------------------------*/
 void SongStreamer::streamSong() {
     if (bytesSent < totalBytes) {
         packetizeNextSongSection();
@@ -74,6 +168,24 @@ void SongStreamer::streamSong() {
     }
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void SongStreamer::packetizeNextSongSection()
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void SongStreamer::packetizeNextSongSection()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Packetize the next section in the song to prepare it to be sent.
+--
+------------------------------------------------------------------------------*/
 void SongStreamer::packetizeNextSongSection() {
     if (totalBytes - bytesSent < AUDIO_BUFFER_SIZE) {
         audioPkt.len = totalBytes - bytesSent;
