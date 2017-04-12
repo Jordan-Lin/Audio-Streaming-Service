@@ -7,6 +7,7 @@
 #include "audiomanager.h"
 #include "defines.h"
 #include "songqueue.h"
+#include "clientmanager.h"
 #include "gettime.h"
 
 SongStreamer::SongStreamer() {
@@ -45,10 +46,9 @@ void SongStreamer::initStream() {
             waitResult = WaitForSingleObjectEx(songSent, INFINITE, TRUE);
         }
         Sync sync;
-        WSABUF wsaBuf;
         wsaBuf.buf = reinterpret_cast<char *>(&sync);
         wsaBuf.len = sizeof(Sync);
-        ClientManager::broadcast(wsaBuf);
+        ClientManager::get().broadcast(wsaBuf);
         Time end = getCurrentTime();
 
         Sleep(1000 * audioManager::get().durationCalc(

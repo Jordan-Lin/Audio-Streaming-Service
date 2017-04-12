@@ -72,7 +72,7 @@ void Client::parse(int recvBytes) {
         PktIds *pktId = reinterpret_cast<PktIds *>(tempBuffer);
         switch (*pktId) {
         case PktIds::SYNC:
-            audioManager::get().startSong();
+            audioManager::get().playSong();
             break;
         case PktIds::USERS:
             {
