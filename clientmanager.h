@@ -4,6 +4,7 @@
 #include "lockedmap.h"
 #include "clienthandler.h"
 #include <memory>
+#include <atomic>
 #include "defines.h"
 
 class ClientManager : public LockedMap<int, std::shared_ptr<ClientHandler>> {

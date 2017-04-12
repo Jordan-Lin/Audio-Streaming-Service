@@ -13,6 +13,7 @@
 #include <QListView>
 #include <QAbstractItemView>
 #include <vector>
+#include <map>
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +48,9 @@ private slots:
     void on_B_Download_clicked();
     void on_B_Request_clicked();
 
+    // UI manipulation
+    void disableUI();
+
 //signals:
 //    void updateSongVector(std::vector<std::string> list);
 //    void updateQueueVector(std::vector<std::string> list);
@@ -56,6 +60,7 @@ private:
     Ui::MainWindow *ui;
 
     // List Model Pairs
+    std::map<int, int> rowToUserId;
     QStringList songList;
     QStringListModel *SList;
     QStringList queueList;

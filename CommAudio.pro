@@ -10,7 +10,7 @@ QT       += core gui\
             widgets
 
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
 
 TARGET = CommAudio
 TEMPLATE = app
@@ -44,8 +44,9 @@ SOURCES += main.cpp\
         songqueue.cpp \
         songstreamer.cpp \
         songstreamreceiver.cpp \
-    usermanager.cpp \
-    user.cpp
+        usermanager.cpp \
+        user.cpp \
+    audiomanager.cpp
 
 HEADERS  += mainwindow.h \
         calldialogue.h \
@@ -69,8 +70,9 @@ HEADERS  += mainwindow.h \
         songqueue.h \
         songstreamer.h \
         songstreamreceiver.h \
-    usermanager.h \
-    user.h
+        usermanager.h \
+        user.h \
+    audiomanager.h
 
 FORMS    += mainwindow.ui \
         calldialogue.ui \

@@ -10,7 +10,7 @@
 
 class ClientHandler {
 public:
-    ClientHandler(SOCKET sock);
+    ClientHandler(SOCKET sock, u_long addr);
     UserInfo& getInfo() {return info;}
     SOCKET getSocket() {return info.userId;}
 private:
