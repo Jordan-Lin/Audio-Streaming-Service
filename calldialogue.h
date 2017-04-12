@@ -49,7 +49,7 @@ private:
     void initializeAudio();
     void createAudioInput();
     void createAudioOutput();
-    void CallConnect();
+    void callConnect();
     void receive();
 
     int ApplyVolumeToSample(short iSample);
@@ -72,12 +72,9 @@ private:
     std::string contact;
     SOCKET callSock;
     char voiceDataBuff[MAX_BUFF_SIZE];
-
     sockaddr_in sockAdd;
-
     std::atomic<bool> receiving;
 
-//    Ui::MainWindow *ui;
     // Audio input/output variables
     QAudioDeviceInfo m_Inputdevice;
     QAudioDeviceInfo m_Outputdevice;

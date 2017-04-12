@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>211</width>
     <height>151</height>
    </rect>
   </property>
@@ -18,8 +18,8 @@
     <rect>
      <x>7</x>
      <y>10</y>
-     <width>181</width>
-     <height>81</height>
+     <width>197</width>
+     <height>82</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="DialogueLayout">
@@ -64,22 +64,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="Buttons">
-      <item>
-       <widget class="QPushButton" name="B_Mute">
-        <property name="text">
-         <string>Mute</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="B_HangUp">
-        <property name="text">
-         <string>Hang Up</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <layout class="QHBoxLayout" name="Buttons"/>
     </item>
    </layout>
   </widget>
