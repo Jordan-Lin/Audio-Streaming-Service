@@ -4,7 +4,11 @@
 #include <QDialog>
 #include <QDebug>
 #include <WinSock2.h>
-
+#include <QByteArray>
+#include <QtMultiMedia/QAudioInput>
+#include <QtMultiMedia/QAudioOutput>
+#include <QBuffer>
+#include "utilities.h"
 
 static constexpr int MAX_BUFF_SIZE = 65000;
 static constexpr int CALL_PORT = 0;
@@ -38,7 +42,19 @@ public:
 
 //    void print(std::string p) { qDebug() << QString(p); }
 
+private:
+    void initializeAudio();
+    void createAudioInput();
+    void createAudioOutput();
+    void CallConnect();
+    void receive();
+
+    int ApplyVolumeToSample(short iSample);
+
 private slots:
+    void readMore();
+//    void on_pushButton_clicked();
+    void on_horizontalSlider_valueChanged(int value);
 
 private:
     // UI Pointer for ui manipulation
@@ -53,6 +69,19 @@ private:
     std::string contact;
     SOCKET callSock;
     char voiceDataBuff[MAX_BUFF_SIZE];
+
+    sockaddr_in sockAdd;
+
+//    Ui::MainWindow *ui;
+    QAudioDeviceInfo m_Inputdevice;
+    QAudioDeviceInfo m_Outputdevice;
+    QAudioFormat m_format;
+    QAudioInput *m_audioInput;
+    QAudioOutput *m_audioOutput;
+    QIODevice *m_input;
+    QIODevice *m_output;
+    QByteArray m_buffer;
+    int m_iVolume;
 };
 
 #endif // CALLDIALOGUE_H
