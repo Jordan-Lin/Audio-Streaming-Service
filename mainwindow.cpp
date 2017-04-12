@@ -258,7 +258,11 @@ void MainWindow::updatedUList()
 {
     DebugWindow::get()->logd("  ");
     userList.clear();
+    rowToUserId.clear();
+    int row = 0;
     for (const auto& user : UserManager::get().getAll()) {
+        rowToUserId[row] = user.getId();
+        row++;
         userList << user.getUsername();
     }
     UList->setStringList(userList);
@@ -364,6 +368,7 @@ void MainWindow::on_B_Call_clicked()
     // Get user list from map of name and struct.
     qDebug() << "selected = " << userSelect;
 
+    const u_long ip = UserManager::get().at(rowToUserId[userSelect]).getIp();
     CallDialogue::get()->show();
     CallDialogue::get()->setContact(uName);
     CallDialogue::get()->init();

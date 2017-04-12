@@ -13,6 +13,7 @@
 #include <QListView>
 #include <QAbstractItemView>
 #include <vector>
+#include <map>
 
 namespace Ui {
 class MainWindow;
@@ -59,6 +60,7 @@ private:
     Ui::MainWindow *ui;
 
     // List Model Pairs
+    std::map<int, int> rowToUserId;
     QStringList songList;
     QStringListModel *SList;
     QStringList queueList;
