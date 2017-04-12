@@ -13,6 +13,11 @@ public:
         map.insert(std::pair<Key, Val>(key, elem));
     }
 
+    void empty() {
+        std::lock_guard<std::mutex> guard(lock);
+        map.clear();
+    }
+
     void erase(Key key) {
         std::lock_guard<std::mutex> guard(lock);
         map.erase(map.find(key));

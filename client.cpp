@@ -61,6 +61,7 @@ void Client::parse(int recvBytes) {
         switch (*pktId) {
         case PktIds::USERS:
             {
+                UserManager::get().empty();
                 UserInfo *start = reinterpret_cast<UserInfo *>(tempBuffer + sizeof(PktIds::USERS) + sizeof(int));
                 UserInfo *end = reinterpret_cast<UserInfo *>(
                             start + *reinterpret_cast<int *>(

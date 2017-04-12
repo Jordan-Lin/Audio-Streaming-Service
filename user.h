@@ -11,6 +11,7 @@ public:
     User(QString username, int id, u_long ip)
         : username(username), id(id), ip(ip) {}
     QString getUsername() const {return username;}
+    ~User();
     int getId() const {return id;}
     u_long getIp() const {return ip;}
 private:
