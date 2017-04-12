@@ -101,7 +101,7 @@ void CallDialogue::initializeAudio()
     m_format.setByteOrder(QAudioFormat::LittleEndian); //Byte order
     m_format.setCodec("audio/pcm"); //set codec as simple audio/pcm
 
-    QAudioDeviceInfo infoIn(QAudioDeviceInfo::defaultInputDevice());\
+    QAudioDeviceInfo infoIn(QAudioDeviceInfo::defaultInputDevice());
     QAudioDeviceInfo infoOut(QAudioDeviceInfo::defaultOutputDevice());
 
     createAudioInput();
