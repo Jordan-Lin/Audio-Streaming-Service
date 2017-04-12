@@ -41,7 +41,7 @@ void SongStreamReceiver::handleSongPkt(DWORD recvBytes) {
             {
                 Audio *audio = reinterpret_cast<Audio *>(tempBuffer);
                 audioManager::get().appender(QByteArray(audio->buffer, audio->len));
-                audioManager::get().playSong();
+                //audioManager::get().playSong();
             }
             offset += sizeof(Audio);
             break;

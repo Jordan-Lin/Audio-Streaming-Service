@@ -31,7 +31,8 @@ enum PktIds {
     HEADER_INFO,
     DOWNLOAD_REQUEST,
     DOWNLOAD,
-    UPLOAD
+    UPLOAD,
+    SYNC
 };
 
 typedef struct {
@@ -126,5 +127,9 @@ typedef struct {
     char album[UPLOAD_STRING];
     int len;
 } Upload;
+
+typedef struct {
+    PktIds pktId = PktIds::SYNC;
+} Sync;
 
 #endif

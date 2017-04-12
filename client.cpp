@@ -71,6 +71,9 @@ void Client::parse(int recvBytes) {
 
         PktIds *pktId = reinterpret_cast<PktIds *>(tempBuffer);
         switch (*pktId) {
+        case PktIds::SYNC:
+            audioManager::get().startSong();
+            break;
         case PktIds::USERS:
             {
                 UserInfo *start = reinterpret_cast<UserInfo *>(tempBuffer + sizeof(PktIds::USERS) + sizeof(int));

@@ -39,16 +39,18 @@ void SongStreamer::initStream() {
         bytesSent = 0;
         Time begin = getCurrentTime();
         streamSong();
+
         DWORD waitResult = WAIT_IO_COMPLETION;
         while (waitResult == WAIT_IO_COMPLETION) {
             waitResult = WaitForSingleObjectEx(songSent, INFINITE, TRUE);
         }
+        Sync sync;
+        WSABUF wsaBuf;
+        wsaBuf.buf = reinterpret_cast<char *>(&sync);
+        wsaBuf.len = sizeof(Sync);
+        ClientManager::broadcast(wsaBuf);
         Time end = getCurrentTime();
-        HANDLE tempEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-        DebugWindow::get()->logd(QString(" TIME : ")  + itoq(1000 * audioManager::get().durationCalc(
-                audioManager::get().loadHeader(song.getDir()))));
-        DebugWindow::get()->logd(QString("duration: ") + (1000 * audioManager::get().durationCalc(
-                                     audioManager::get().loadHeader(song.getDir()))));
+
         Sleep(1000 * audioManager::get().durationCalc(
                 audioManager::get().loadHeader(song.getDir())) - getDuration(begin, end)); //len of song
         SongQueue::get().popSong();
