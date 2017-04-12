@@ -1,3 +1,25 @@
+/*------------------------------------------------------------------------------
+-- SOURCE FILE: client.cpp
+--
+-- PROGRAM: CommAudio
+--
+-- FUNCTIONS: Client(QString serverIp, QString username);
+    ~Client();
+    static void receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
+    void parse(int recvBytes);
+    void sendDownloadRequest(int songId);
+    void sendSongRequest(int songId);
+    void sendUploadRequest(QString title, QString album, QString artist, QString fileName);
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- NOTES: Client side of the project that initiates connection to server.
+--
+------------------------------------------------------------------------------*/
 #include "client.h"
 #include "utilities.h"
 #include "packets.h"
@@ -13,6 +35,24 @@
 #include <QFile>
 #include "audiomanager.h"
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: Client::Client(QString serverIp, QString username)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: Client::Client(QString serverIp, QString username)
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Initiate client.
+--
+------------------------------------------------------------------------------*/
 Client::Client(QString serverIp, QString username) {
     std::string strServerIp(serverIp.toStdString());
     const char *cStrServerIp = strServerIp.c_str();
@@ -29,10 +69,46 @@ Client::Client(QString serverIp, QString username) {
     receiverThread.detach();
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: Client::~Client()
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: Client::~Client()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Destructor for the client
+--
+------------------------------------------------------------------------------*/
 Client::~Client() {
     delete receiver;
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void Client::run(QString username)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void Client::run(QString username)
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Run the client by connecting to the socket
+--
+------------------------------------------------------------------------------*/
 void Client::run(QString username) {
     if (connectSocket(sock, servAddr) == false) {
         DebugWindow::get()->logd("Failed to connect to server.");
@@ -54,6 +130,22 @@ void Client::run(QString username) {
     }
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void Client::receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void Client::receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags)
+--
+-- RETURNS: N/A
+--
+-- NOTES: Completion routine for receiving packets
+--
+------------------------------------------------------------------------------*/
 void Client::receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags) {
     if (errCode != 0) {
         DebugWindow::get()->logd("Client::receiveRoutine failed.");
@@ -62,6 +154,24 @@ void Client::receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, D
     reinterpret_cast<ClientOlap *>(olap)->client->parse(recvBytes);
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void Client::parse(int recvBytes)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void Client::parse(int recvBytes)
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: Parse the packets coming into client and determine which type of information it is.
+--
+------------------------------------------------------------------------------*/
 void Client::parse(int recvBytes) {
     char *tempBuffer = buffer;
     int offset = 0;
@@ -190,6 +300,24 @@ void Client::parse(int recvBytes) {
     receive(sock, wsaBuf, &olapWrap.olap, receiveRoutine);
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void Client::sendSongRequest(int songId)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void Client::sendSongRequest(int songId)
+--
+-- PARAMETERS: songId: the id of the song to request from the server
+--
+-- RETURNS: N/A
+--
+-- NOTES: Sends request to the server to get song to play next
+--
+------------------------------------------------------------------------------*/
 void Client::sendSongRequest(int songId) {
     SongRequest request;
     request.songId = songId + 1;
@@ -200,6 +328,24 @@ void Client::sendSongRequest(int songId) {
     sendTCP(sock, wsaBuf);
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void Client::sendDownloadRequest(int songId)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void Client::sendDownloadRequest(int songId)
+--
+-- PARAMETERS: songId: indicates which song to download to the server
+--
+-- RETURNS: N/A
+--
+-- NOTES: Sends request to server to download song
+--
+------------------------------------------------------------------------------*/
 void Client::sendDownloadRequest(int songId) {
     DebugWindow::get()->logd("Sending download request");
     DownloadRequest request;
@@ -211,6 +357,27 @@ void Client::sendDownloadRequest(int songId) {
     sendTCP(sock, wsaBuf);
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: void Client::sendUploadRequest(QString title, QString album, QString artist, QString fileName)
+--
+-- DATE:    April 10th, 2017
+--
+-- DESIGNER: Brody McCrone
+--
+-- PROGRAMMER: Brody McCrone
+--
+-- INTERFACE: void Client::sendUploadRequest(QString title, QString album, QString artist, QString fileName)
+--
+-- PARAMETERS: title: title of the song
+                album: album of the song
+                artist: artist of the song
+                fileName: file name of the song
+--
+-- RETURNS: N/A
+--
+-- NOTES: Sends upload request to the server containing the song information
+--
+------------------------------------------------------------------------------*/
 void Client::sendUploadRequest(QString title, QString album, QString artist, QString fileName) {
     Upload upload;
     std::string strTitle = title.toStdString();
