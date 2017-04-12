@@ -4,9 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui\
+            multimedia\
+            multimedia widgets\
+            widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
 
 TARGET = CommAudio
 TEMPLATE = app
@@ -24,8 +28,53 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+        calldialogue.cpp \
+        updatehandler.cpp \
+        fileselectdialogue.cpp \
+        utilities.cpp \
+        debugwindow.cpp \
+        songstreamer.cpp \
+        client.cpp \
+        server.cpp \
+        clienthandler.cpp \
+        clientmanager.cpp \
+        song.cpp \
+        songmanager.cpp \
+        songqueue.cpp \
+        songstreamer.cpp \
+        songstreamreceiver.cpp \
+        usermanager.cpp \
+        user.cpp \
+    audiomanager.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+        calldialogue.h \
+        defines.h \
+        packets.h \
+        updatehandler.h \
+        fileselectdialogue.h \
+        utilities.h \
+        routinestructs.h \
+        debugwindow.h \
+        songstreamer.h\
+        client.h \
+        server.h \
+        clienthandler.h \
+        clientmanager.h \
+        lockedmap.h \
+        lockedqueue.h \
+        packets.h \
+        song.h \
+        songmanager.h \
+        songqueue.h \
+        songstreamer.h \
+        songstreamreceiver.h \
+        usermanager.h \
+        user.h \
+    audiomanager.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+        calldialogue.ui \
+        fileselectdialogue.ui \
+        debugwindow.ui
