@@ -65,14 +65,7 @@ CallDialogue::CallDialogue(QWidget *parent) :
 --
 ------------------------------------------------------------------------------*/
 CallDialogue::~CallDialogue()
-{
-    DebugWindow::get()->logd("Closing Call dialogue.\n");
-    receiving = false;
-    //Audio output device
-    m_audioOutput->stop();
-    //Audio input device
-    m_audioInput->stop();
-    closesocket(callSock);
+{    
     delete ui;
 }
 
@@ -442,4 +435,15 @@ void CallDialogue::reject()
     if (resBtn == QMessageBox::Yes) {
         QDialog::reject();
     }
+}
+
+void CallDialogue::on_B_HangUp_clicked()
+{
+    DebugWindow::get()->logd("Closing Call dialogue.\n");
+    receiving = false;
+    //Audio output device
+    m_input->close();
+    //Audio input device
+    m_output->close();
+    closesocket(callSock);
 }

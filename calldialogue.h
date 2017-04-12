@@ -59,6 +59,8 @@ private slots:
 //    void on_pushButton_clicked();
     void on_horizontalSlider_valueChanged(int value);
 
+    void on_B_HangUp_clicked();
+
 private:
     // UI Pointer for ui manipulation
     Ui::CallDialogue *ui;

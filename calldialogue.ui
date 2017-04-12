@@ -64,7 +64,15 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="Buttons"/>
+     <layout class="QHBoxLayout" name="Buttons">
+      <item>
+       <widget class="QPushButton" name="B_HangUp">
+        <property name="text">
+         <string>Hang Up</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
