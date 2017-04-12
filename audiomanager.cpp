@@ -1,15 +1,76 @@
+/*------------------------------------------------------------------------------
+-- SOURCE FILE: audiomanager.cpp
+--
+-- PROGRAM: CommAudio
+--
+-- FUNCTIONS:
+--  static audioManager& get() {return instance;}
+--  QByteArray loadHeader(QString fileName);
+--  QByteArray loadAudio(QString fileName);
+--  void playSong() {startSong = true;}
+--  void initAudio(short bits, qint32 sample, short channels);
+--  void appender(QByteArray);
+--  HeaderInfo audioManager::parseHeader(QByteArray headerInfo);
+--  int audioManager::durationCalc(QByteArray header);
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- NOTES: file that handles the playing and retrieving of audio files.
+--
+------------------------------------------------------------------------------*/
 #include "audiomanager.h"
 
 QByteArray audio_data;
 
 audioManager audioManager::instance;
 
+
+/*------------------------------------------------------------------------------
+-- FUNCTION: audioManager
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: audioManager::audioManager()
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: constructor for the audioManager class
+--
+------------------------------------------------------------------------------*/
 audioManager::audioManager()
 {
 
 }
 
-//Don't know how we want to extract and send the header
+/*------------------------------------------------------------------------------
+-- FUNCTION: loadHeader
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: QByteArray audioManager::loadHeader(QString fileName)
+--
+-- PARAMETERS: QString fileName - path to the file containing the wav file
+--
+-- RETURNS: QByteArray - header information read from the wav file
+--
+-- NOTES: This function opens a wav file, reads the header information
+--        and returns it.
+--
+------------------------------------------------------------------------------*/
 QByteArray audioManager::loadHeader(QString fileName) {
     QFile audio_file(fileName);
     audio_file.open(QIODevice::ReadOnly);
@@ -18,6 +79,25 @@ QByteArray audioManager::loadHeader(QString fileName) {
     return audio_data;
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: loadAudio
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: QByteArray audioManager::loadAudio(QString fileName)
+--
+-- PARAMETERS: QString fileName - path to the file containing the wav file
+--
+-- RETURNS: QByteArray - audio data for the wav file passed in
+--
+-- NOTES: This function reads in the audio portion of a wav file and
+--        returns it.
+--
+------------------------------------------------------------------------------*/
 QByteArray audioManager::loadAudio(QString fileName) {
     QFile audio_file(fileName);
     audio_file.open(QIODevice::ReadOnly);
@@ -27,6 +107,24 @@ QByteArray audioManager::loadAudio(QString fileName) {
     return song;
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: initAudio
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: void audioManager::initAudio(short bits, qint32 sample, short channels)
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES: This function initalizes the playing of audio in an event loop.
+--
+------------------------------------------------------------------------------*/
 void audioManager::initAudio(short bits, qint32 sample, short channels) {
     audio_data.clear();
     QBuffer audio_buffer(&audio_data);
@@ -51,10 +149,50 @@ void audioManager::initAudio(short bits, qint32 sample, short channels) {
     startSong = false;
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: appender
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: void audioManager::appender(QByteArray data)
+--
+-- PARAMETERS: QByteArray data - song data to be appended to the QByteArray
+--             that is currently playing
+--
+-- RETURNS: N/A
+--
+-- NOTES: This function appends a chunk of data passed into the parameter, to the
+--        audio data that is already playing to create a stream of audio.
+--
+------------------------------------------------------------------------------*/
 void audioManager::appender(QByteArray data) {
     audio_data.append(data);
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: parseHeader
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: HeaderInfo audioManager::parseHeader(QByteArray header)
+--
+-- PARAMETERS: QByteArray header - the data that is contained within the header
+--             of the wav file.
+--
+-- RETURNS: HeaderInfo - returns a reference to a struct containing the header info
+--
+-- NOTES: This function reads the header information passed into it, stores the
+--        information in a structure and returns that structure
+--
+------------------------------------------------------------------------------*/
 HeaderInfo audioManager::parseHeader(QByteArray header) {
     QDataStream analyzeHeaderDS(&header,QIODevice::ReadOnly);
     HeaderInfo headerInfo;
@@ -100,6 +238,26 @@ HeaderInfo audioManager::parseHeader(QByteArray header) {
     return headerInfo;
 }
 
+/*------------------------------------------------------------------------------
+-- FUNCTION: durationCalc
+--
+-- DATE:    April 11th, 2017
+--
+-- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
+--
+-- PROGRAMMER: Justen DePourcq
+--
+-- INTERFACE: int audioManager::durationCalc(QByteArray header)
+--
+-- PARAMETERS: QByteArray header - the data that is contained within
+--             the header of the wav file
+--
+-- RETURNS: int - the duration of the audio clip
+--
+-- NOTES: This function reads the header information of the wav file
+--        and calculates the length of the audio clip based on that information.
+--
+------------------------------------------------------------------------------*/
 int audioManager::durationCalc(QByteArray header) {
     char fileType[4];
     qint32 fileSize;
