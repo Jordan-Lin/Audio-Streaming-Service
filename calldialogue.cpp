@@ -43,9 +43,6 @@ CallDialogue::CallDialogue(QWidget *parent) :
     ui(new Ui::CallDialogue)
 {
     ui->setupUi(this);
-    init();
-    initializeAudio();
-    CallConnect();
 }
 
 /*------------------------------------------------------------------------------
@@ -69,7 +66,11 @@ CallDialogue::CallDialogue(QWidget *parent) :
 CallDialogue::~CallDialogue()
 {
     DebugWindow::get()->logd("Closing Call dialogue.\n");
-    receiving = false;
+//    receiving = false;
+//    m_output = NULL;
+//    m_input = NULL;
+//    closesocket(callSock);
+//    instance = nullptr;
     delete ui;
 }
 
@@ -240,6 +241,8 @@ CallDialogue *CallDialogue::get()
 ------------------------------------------------------------------------------*/
 void CallDialogue::init() {
     ui->L_Contact->setText(QString::fromStdString(contact));
+    initializeAudio();
+    CallConnect();
 }
 
 /*------------------------------------------------------------------------------
@@ -306,4 +309,16 @@ void CallDialogue::reject()
     if (resBtn == QMessageBox::Yes) {
         QDialog::reject();
     }
+}
+
+void CallDialogue::on_B_HangUp_clicked()
+{
+    DebugWindow::get()->logd("Closing Call dialogue.\n");
+    receiving = false;
+    m_output->close();
+
+    //Audio input device
+    m_input->close();
+    ui->L_Contact->setText("Disconnected");
+    closesocket(callSock);
 }
