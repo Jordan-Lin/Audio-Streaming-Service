@@ -83,15 +83,23 @@ void ClientHandler::parse(int recvBytes) {
             {
                 DebugWindow::get()->logd("received download request.");
                 DownloadRequest *request = reinterpret_cast<DownloadRequest *>(tempBuffer);
-                QByteArray data;
-                data.resize(sizeof(PktIds::DOWNLOAD) + sizeof(int) + sizeof(int));
-                data += audioManager::get().loadSong(SongManager::get().at(request->songId).getDir());
+                QByteArray data = audioManager::get().loadSong(SongManager::get().at(request->songId).getDir());
+                char temp[sizeof(PktIds::DOWNLOAD) + sizeof(int) + sizeof(int)];
                 PktIds pktId = PktIds::DOWNLOAD;
-                int len = data.size() - sizeof(PktIds::DOWNLOAD) - sizeof(int) - sizeof(int);
-                memcpy(data.data(), &pktId, sizeof(PktIds::DOWNLOAD));
-                memcpy(data.data() + sizeof(PktIds::DOWNLOAD), &request->songId, sizeof(int));
-                memcpy(data.data() + sizeof(PktIds::DOWNLOAD) + sizeof(int), &len, sizeof(int));
+                int len = data.size();
+                memcpy(temp, &pktId, sizeof(PktIds::DOWNLOAD));
+                memcpy(temp + sizeof(PktIds::DOWNLOAD), &request->songId, sizeof(int));
+                memcpy(temp + sizeof(PktIds::DOWNLOAD) + sizeof(int), &len, sizeof(int));
                 WSABUF wsaBuf;
+                wsaBuf.buf = temp;
+                wsaBuf.len = sizeof(temp);
+
+                sendTCP(info.userId, wsaBuf);
+
+
+
+                DebugWindow::get()->logd(QString("len: ") + itoq(len));
+
                 wsaBuf.buf = data.data();
                 wsaBuf.len = data.size();
                 sendTCP(info.userId, wsaBuf);
