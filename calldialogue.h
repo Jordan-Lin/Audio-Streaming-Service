@@ -1,13 +1,16 @@
 #ifndef CALLDIALOGUE_H
 #define CALLDIALOGUE_H
 
+#include <WinSock2.h>
+#include <atomic>
+
 #include <QDialog>
 #include <QDebug>
-#include <WinSock2.h>
 #include <QByteArray>
 #include <QtMultiMedia/QAudioInput>
 #include <QtMultiMedia/QAudioOutput>
 #include <QBuffer>
+
 #include "utilities.h"
 
 static constexpr int MAX_BUFF_SIZE = 65000;
@@ -72,7 +75,10 @@ private:
 
     sockaddr_in sockAdd;
 
+    std::atomic<bool> receiving;
+
 //    Ui::MainWindow *ui;
+    // Audio input/output variables
     QAudioDeviceInfo m_Inputdevice;
     QAudioDeviceInfo m_Outputdevice;
     QAudioFormat m_format;

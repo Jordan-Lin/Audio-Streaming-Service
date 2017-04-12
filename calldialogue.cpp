@@ -4,6 +4,7 @@
 #include <QCloseEvent>
 #include <thread>
 #include "debugwindow.h"
+#include "defines.h"
 
 using namespace std;
 
@@ -66,52 +67,43 @@ CallDialogue::CallDialogue(QWidget *parent) :
 ------------------------------------------------------------------------------*/
 CallDialogue::~CallDialogue()
 {
+    DebugWindow::get()->logd("Closing Call dialogue.\n");
+    receiving = false;
     delete ui;
 }
 
 void CallDialogue::CallConnect() {
     callSock = createSocket(SOCK_DGRAM);
-    const char *cStrServerIp = "192.168.0.12";
-    sockAdd = createAddress(inet_addr(cStrServerIp), htons(2323));
-    bindSocket(callSock, sockAdd);
+    const char *cStrServerIp = "192.168.04";
+    sockAdd = createAddress(inet_addr(cStrServerIp), htons(7003));
+    bindSocket(callSock, createAddress(INADDR_ANY, htons(7003)));
 
     //Audio output device
     m_output= m_audioOutput->start();
+
     //Audio input device
     m_input = m_audioInput->start();
     //connect readyRead signal to readMre slot.
     //Call readmore when audio samples fill in inputbuffer
     connect(m_input, SIGNAL(readyRead()), SLOT(readMore()));
-//    connect(m_input, SIGNAL(readyRead()), SLOT(receive()));
-
-//    std::thread callReceiveThread(&CallDialogue::receive, this);
-//    callReceiveThread.detach();
+    receiving = true;
+    std::thread callReceiveThread(&CallDialogue::receive, this);
+    callReceiveThread.detach();
 }
 
 //Initialize audio
 void CallDialogue::initializeAudio()
 {
-    m_format.setSampleRate(8000); //set frequency to 8000
+    m_format.setSampleRate(22050); //set frequency to 8000
     m_format.setChannelCount(1); //set channels to mono
     m_format.setSampleSize(16); //set sample sze to 16 bit
-    m_format.setSampleType(QAudioFormat::UnSignedInt ); //Sample type as usigned integer sample
+    m_format.setSampleType(QAudioFormat::SignedInt ); //Sample type as usigned integer sample
     m_format.setByteOrder(QAudioFormat::LittleEndian); //Byte order
     m_format.setCodec("audio/pcm"); //set codec as simple audio/pcm
 
-    QAudioDeviceInfo infoIn(QAudioDeviceInfo::defaultInputDevice());
-    if (!infoIn.isFormatSupported(m_format))
-    {
-        //Default format not supported - trying to use nearest
-        m_format = infoIn.nearestFormat(m_format);
-    }
-
+    QAudioDeviceInfo infoIn(QAudioDeviceInfo::defaultInputDevice());\
     QAudioDeviceInfo infoOut(QAudioDeviceInfo::defaultOutputDevice());
 
-    if (!infoOut.isFormatSupported(m_format))
-    {
-       //Default format not supported - trying to use nearest
-        m_format = infoOut.nearestFormat(m_format);
-    }
     createAudioInput();
     createAudioOutput();
 }
@@ -134,12 +126,8 @@ void CallDialogue::createAudioInput()
 
 void CallDialogue::readMore()
 {
-    int i, nBufSize, err;
-    char *buf, *buf_ptr;
-    struct sockaddr_in sin ;
-
-    nBufSize = 4096;
-    buf = (char*)malloc(nBufSize) ;
+    int nBufSize = 4096;
+    char * buf = (char*)malloc(nBufSize) ;
 
     //Return if audio input is null
     if(!m_audioInput)
@@ -157,21 +145,10 @@ void CallDialogue::readMore()
     {
         //Assign sound samples to short array
         short* resultingData = (short*)m_buffer.data();
-
-
         short *outdata=resultingData;
         outdata[ 0 ] = resultingData [ 0 ];
 
          int iIndex;
-//         if(ui->chkRemoveNoise->checkState() == Qt::Checked)
-//         {
-//                //Remove noise using Low Pass filter algortm[Simple algorithm used to remove noise]
-//                for ( iIndex=1; iIndex < len; iIndex++ )
-//                {
-//                    outdata[ iIndex ] = 0.333 * resultingData[iIndex ] + ( 1.0 - 0.333 ) * outdata[ iIndex-1 ];
-//                }
-//          }
-
          for ( iIndex=0; iIndex < len; iIndex++ )
          {
              //Cange volume to each integer data in a sample
@@ -179,17 +156,11 @@ void CallDialogue::readMore()
          }
 
          //write modified sond sample to outputdevice for playback audio
-//          m_output->write((char*)outdata, len);
          if (sendto(callSock, (char*)outdata, len, 0, (struct sockaddr *)&sockAdd, sizeof( sockAdd )) <= 0){
              DebugWindow::get()->logd("Call: sendto failed.");
          }
-//         buf[0] = 't';
-//         if (sendto(callSock, (char*)buf, len, 0, (struct sockaddr *)&sockAdd, sizeof( sockAdd )) <= 0){
-//             DebugWindow::get()->logd("Call: sendto failed2.");
-//         }
-
+         DebugWindow::get()->logd("Data Sent.\n");
     }
-receive();
 }
 
 void CallDialogue::receive(){
@@ -199,13 +170,14 @@ void CallDialogue::receive(){
     int sin_len;
 
     sin_len = sizeof(sockAdd);
+    while (receiving) {
+        if ((recvRet = recvfrom (callSock, buf, 4096, 0, (struct sockaddr *)&sockAdd, &sin_len)) < 0){
+            DebugWindow::get()->logd("Call: receive failed.");
+        }
 
-    if ((recvRet = recvfrom (callSock, buf, 4096, 0, (struct sockaddr *)&sockAdd, &sin_len)) < 0){
-        DebugWindow::get()->logd("Call: receive failed.");
+        m_output->write((char*)buf, 4096);
+        DebugWindow::get()->logd("Call: receive END");
     }
-
-    m_output->write((char*)buf, 4096);
-    DebugWindow::get()->logd("Call: receive END");
 }
 
 int CallDialogue::ApplyVolumeToSample(short iSample)
@@ -214,22 +186,6 @@ int CallDialogue::ApplyVolumeToSample(short iSample)
     return max(min(((iSample * m_iVolume) / 50) ,35535), -35535);
 
 }
-
-
-//void CallDialogue::on_pushButton_clicked()
-//{
-//    //Audio output device
-//    m_output= m_audioOutput->start();
-//     //Audio input device
-//    m_input = m_audioInput->start();
-//    //connect readyRead signal to readMre slot.
-//    //Call readmore when audio samples fill in inputbuffer
-//    connect(m_input, SIGNAL(readyRead()), SLOT(readMore()));
-
-//}
-
-
-
 
 void CallDialogue::on_horizontalSlider_valueChanged(int value)
 {
