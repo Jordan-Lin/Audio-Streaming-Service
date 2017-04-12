@@ -19,7 +19,8 @@ enum ErrorType {
     SEND_TCP,
     ACCEPT_CONNECTION,
     CONNECT_SOCKET,
-    SEND_UDP
+    SEND_UDP,
+    RECV_TCP
 };
 
 typedef void (*Routine)(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
@@ -31,6 +32,7 @@ SOCKET acceptConnection(SOCKET sock);
 void sendUDP(SOCKET sock, WSABUF& wsaBuf, struct sockaddr_in addr);
 bool connectSocket(SOCKET sock, struct sockaddr_in addr);
 void sendTCP(SOCKET sock, WSABUF& wsaBuf);
+int recvTCP(SOCKET sock, WSABUF& wsaBuf);
 void bindSocket(SOCKET sock, struct sockaddr_in addr);
 std::pair<SOCKET, struct sockaddr_in> acceptConnectionGetAddr(SOCKET sock);
 struct sockaddr_in createAddress(u_long ip, int port);

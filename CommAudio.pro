@@ -46,7 +46,8 @@ SOURCES += main.cpp\
         songstreamreceiver.cpp \
         usermanager.cpp \
         user.cpp \
-    audiomanager.cpp
+    audiomanager.cpp \
+    gettime.cpp
 
 HEADERS  += mainwindow.h \
         calldialogue.h \
@@ -72,7 +73,8 @@ HEADERS  += mainwindow.h \
         songstreamreceiver.h \
         usermanager.h \
         user.h \
-    audiomanager.h
+    audiomanager.h \
+    gettime.h
 
 FORMS    += mainwindow.ui \
         calldialogue.ui \

@@ -6,13 +6,14 @@
 #include <windows.h>
 #include "defines.h"
 
-#define AUDIO_BUFFER_SIZE 10000
+#define AUDIO_BUFFER_SIZE 1000
 #define SONG_TITLE_SIZE 256
 #define SONG_ARTIST_SIZE 256
 #define MAX_USERNAME 64
 #define MAX_TITLE 64
 #define MAX_ARTIST 64
 #define MAX_ALBUM 64
+#define UPLOAD_STRING 256
 
 #include "defines.h"
 
@@ -27,7 +28,10 @@ enum PktIds {
     SONG_QUEUE,
     USER_ID,
     MUSIC_HEADER,
-    HEADER_INFO
+    HEADER_INFO,
+    DOWNLOAD_REQUEST,
+    DOWNLOAD,
+    UPLOAD
 };
 
 typedef struct {
@@ -109,5 +113,18 @@ typedef struct {
     char dataHeader[4];
     qint32 dataSize;
 } HeaderInfo;
+
+typedef struct {
+    PktIds pktId = PktIds::DOWNLOAD_REQUEST;
+    int songId;
+} DownloadRequest;
+
+typedef struct {
+    PktIds pktId = PktIds::UPLOAD;
+    char title[UPLOAD_STRING];
+    char artist[UPLOAD_STRING];
+    char album[UPLOAD_STRING];
+    int len;
+} Upload;
 
 #endif

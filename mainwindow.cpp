@@ -50,7 +50,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->LV_QueueList->setSelectionMode(QAbstractItemView::NoSelection);
     ui->LV_UserList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    ui->HS_SongProgress->setEnabled(false);
 
     // Create model
     SList = new QStringListModel(this);
@@ -99,11 +98,6 @@ void MainWindow::showWarningMessage(QString title, QString msg)
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::information(this, title, msg);
-//    if (reply == QMessageBox::Yes) {
-//      qDebug() << "Yes was clicked";
-//    } else {
-//      qDebug() << "Yes was *not* clicked";
-//    }
 }
 
 /*------------------------------------------------------------------------------
@@ -134,47 +128,6 @@ MainWindow::~MainWindow()
         delete client;
     }
 }
-
-
-
-/*----------------------------------------------
- Test Buttons
-----------------------------------------------*/
-/*------------------------------------------------------------------------------
--- FUNCTION:
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Jordan Lin
---
--- PROGRAMMER: Jordan Lin
---
--- INTERFACE:
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES:
---
-------------------------------------------------------------------------------*/
-void MainWindow::on_B_AddItemTEST_clicked()
-{
-    /*
-    songVector.push_back("Song");
-    UpdateHandler::get()->emitUSV(songVector);
-    queueVector.push_back("Song");
-    UpdateHandler::get()->emitUQV(queueVector);
-    userVector.push_back("User");
-    UpdateHandler::get()->emitUUV(userVector);
-    */
-    //User u("UserTest", 123);
-    //UserManager::get().insert(123, u);
-    //UpdateHandler::get()->emitUUV();
-}
-/*----------------------------------------------
- Test Buttons
-----------------------------------------------*/
 
 
 /*----------------------------------------------
@@ -269,6 +222,33 @@ void MainWindow::updatedUList()
     UList->setStringList(userList);
     ui->LV_UserList->setModel(UList);
 }
+
+/*------------------------------------------------------------------------------
+-- FUNCTION:
+--
+-- DATE:    April 9th, 2017
+--
+-- DESIGNER: Jordan Lin
+--
+-- PROGRAMMER: Jordan Lin
+--
+-- INTERFACE:
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES:
+--
+------------------------------------------------------------------------------*/
+void MainWindow::uploadS() {
+    QString title = FileSelectDialogue::get()->getTitle();
+    QString album = FileSelectDialogue::get()->getAlbum();
+    QString artist = FileSelectDialogue::get()->getArtist();
+    QString filePath = FileSelectDialogue::get()->getFilePath();
+    client->sendUploadRequest(title, album, artist, filePath);
+}
+
 /*----------------------------------------------
  Update Slots
 ----------------------------------------------*/
@@ -329,15 +309,20 @@ void MainWindow::on_LV_SongList_doubleClicked(const QModelIndex &index)
 {
     std::string songSelect = index.data(Qt::DisplayRole).toString().toStdString();
     int song = index.row();
-    qDebug() << "Selectd song index = "<< song;
-    // Grab song from map using the row, get the song information to place a request.
-    // Send Song request
-    // Wait for update received from server to add queue'd song to list.
     if (client != nullptr) {
         client->sendSongRequest(song);
     }
 }
 
+
+
+void MainWindow::on_LV_SongList_clicked(const QModelIndex &index)
+{
+    int songSelect = index.row() + 1;
+    Song curSelected = SongManager::get().at(songSelect);
+    ui->L_Artist->setText(curSelected.getArtist());
+    ui->L_Album->setText(curSelected.getAlbum());
+}
 /*------------------------------------------------------------------------------
 -- FUNCTION:
 --
@@ -358,22 +343,19 @@ void MainWindow::on_LV_SongList_doubleClicked(const QModelIndex &index)
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Call_clicked()
 {
+    // Select user from the list based on index id.
     int userSelect;
     if((userSelect = ui->LV_UserList->currentIndex().row()) == -1) {
         return;
     }
     QModelIndex t = ui->LV_UserList->currentIndex();
     std::string uName = t.data(0).toString().toStdString();
-    // TODO: get the information from the index selected of the Map or vector or list to get user information.
-
-    // Get user list from map of name and struct.
-    qDebug() << "selected = " << userSelect;
 
     const u_long ip = UserManager::get().at(rowToUserId[userSelect]).getIp();
-    CallDialogue::get()->show();
     CallDialogue::get()->setContact(uName);
+    CallDialogue::get()->setIp(ip);
+    CallDialogue::get()->show();
     CallDialogue::get()->init();
-//    CallDialogue::get()->print(CallDialogue::get()->getContact());
 }
 
 /*------------------------------------------------------------------------------
@@ -452,6 +434,10 @@ void MainWindow::on_B_Upload_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Download_clicked()
 {
+    if (client != nullptr) {
+        int userSelection = ui->LV_SongList->currentIndex().row();
+        client->sendDownloadRequest(userSelection);
+    }
     // Get Selected item from SongList, send request with song info packet, run receive loop till all packets received.
     // Loop should happen in completion routine.
 }
@@ -476,6 +462,7 @@ void MainWindow::on_B_Download_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Request_clicked()
 {
+
     // Get Selected item from SongList
     // Create song request packet
     // Send some request packet.
@@ -518,20 +505,7 @@ void MainWindow::disableUI() {
     ui->Artist->hide();
     ui->Album->hide();
     QWidget::setWindowTitle("Server");
-    ui->L_SongName->setText("Running as server");
-    ui->L_SongTime->setText("Running as server");
 }
 /*----------------------------------------------
  UI Manipulation
 ----------------------------------------------*/
-
-void MainWindow::on_pushButton_clicked()
-{
-    QByteArray data = audioManager::get().loadHeader(SongManager::get().at(1).getDir());
-    HeaderInfo info = audioManager::get().parseHeader(data);
-    data = audioManager::get().loadAudio(SongManager::get().at(1).getDir());
-    audioManager::get().appender(data);
-    std::thread audioThread(&audioManager::initAudio, &audioManager::get(), info.bitsPerSample, info.sampleRate, info.numberOfChannels);
-    audioThread.detach();
-    audioManager::get().playSong();
-}

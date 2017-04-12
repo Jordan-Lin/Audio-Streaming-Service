@@ -8,6 +8,10 @@
 #include "debugwindow.h"
 #include "songmanager.h"
 #include "songqueue.h"
+#include <QIODevice>
+#include <QTextStream>
+#include <QFile>
+#include "audiomanager.h"
 
 Client::Client(QString serverIp, QString username) {
     std::string strServerIp(serverIp.toStdString());
@@ -75,7 +79,7 @@ void Client::parse(int recvBytes) {
                             tempBuffer + sizeof(PktIds::USERS)));
                 while (start != end) {
                     DebugWindow::get()->logd(QString("New user ip: ") + itoq(start->ip));
-                    User user(start->username, start->userId, start->ip);
+                    User user(start->username, start->userId, start->ip);\
                     if (start->userId != id) {
                         UserManager::get().insert(start->userId, user);
                     }
@@ -146,6 +150,36 @@ void Client::parse(int recvBytes) {
                 offset += (sizeof(UserId));
             }
             break;
+        case PktIds::DOWNLOAD:
+            {
+                int songId = *reinterpret_cast<int *>(tempBuffer + sizeof(PktIds::DOWNLOAD));
+                int len = *reinterpret_cast<int *>(tempBuffer + sizeof(PktIds::DOWNLOAD) + sizeof(int));
+                QByteArray data(tempBuffer + sizeof(PktIds::DOWNLOAD) + sizeof(int) + sizeof(int),
+                        recvBytes - sizeof(PktIds::DOWNLOAD) - sizeof(int) - sizeof(int));
+                len -= (recvBytes - sizeof(PktIds::DOWNLOAD) - sizeof(int) - sizeof(int));
+                while (len) {
+                    wsaBuf.buf = buffer;
+                    if (len > sizeof(buffer))
+                        wsaBuf.len = sizeof(buffer);
+                    else
+                        wsaBuf.len = len;
+                    int ret = recvTCP(sock, wsaBuf);
+                    data.append(wsaBuf.buf, ret);
+                    len -= ret;
+                }
+                QString fileName(SongManager::get().at(songId).getTitle() + ".wav");
+                QFile file(fileName);
+                if (file.open(QIODevice::ReadWrite)) {
+                    DebugWindow::get()->logd("writing to file");
+                    file.write(data);
+                } else {
+                    DebugWindow::get()->logd("failed to file");
+
+                }
+                file.close();
+                recvBytes = 0;
+            }
+            break;
         }
         recvBytes -= offset;
     }
@@ -163,5 +197,38 @@ void Client::sendSongRequest(int songId) {
     wsaBuf.buf = reinterpret_cast<char *>(&request);
     wsaBuf.len = sizeof(SongRequest);
 
+    sendTCP(sock, wsaBuf);
+}
+
+void Client::sendDownloadRequest(int songId) {
+    DebugWindow::get()->logd("Sending download request");
+    DownloadRequest request;
+    request.songId = songId + 1;
+    WSABUF wsaBuf;
+    wsaBuf.buf = reinterpret_cast<char *>(&request);
+    wsaBuf.len = sizeof(DownloadRequest);
+
+    sendTCP(sock, wsaBuf);
+}
+
+void Client::sendUploadRequest(QString title, QString album, QString artist, QString fileName) {
+    Upload upload;
+    std::string strTitle = title.toStdString();
+    std::string strArtist = artist.toStdString();
+    std::string strAlbum = album.toStdString();
+    const char *cStrTitle = strTitle.c_str();
+    const char *cStrArtist = strArtist.c_str();
+    const char *cStrAlbum = strAlbum.c_str();
+    memcpy(upload.title, cStrTitle, sizeof(upload.title));
+    memcpy(upload.artist, cStrArtist, sizeof(upload.artist));
+    memcpy(upload.album, cStrAlbum, sizeof(upload.album));
+    QByteArray data = audioManager::get().loadSong(fileName);
+    upload.len = data.size();
+    WSABUF wsaBuf;
+    wsaBuf.buf = reinterpret_cast<char *>(&upload);
+    wsaBuf.len = sizeof(Upload);
+    sendTCP(sock, wsaBuf);
+    wsaBuf.buf = data.data();
+    wsaBuf.len = data.size();
     sendTCP(sock, wsaBuf);
 }
