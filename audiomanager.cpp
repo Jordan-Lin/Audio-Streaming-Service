@@ -107,6 +107,7 @@ QByteArray audioManager::loadAudio(QString fileName) {
     return song;
 }
 
+
 /*------------------------------------------------------------------------------
 -- FUNCTION: initAudio
 --
@@ -125,6 +126,15 @@ QByteArray audioManager::loadAudio(QString fileName) {
 -- NOTES: This function initalizes the playing of audio in an event loop.
 --
 ------------------------------------------------------------------------------*/
+
+QByteArray audioManager::loadSong(QString fileName) {
+    QFile audio_file(fileName);
+    audio_file.open(QIODevice::ReadOnly);
+    QByteArray song = audio_file.readAll();
+    audio_file.close();
+    return song;
+}
+
 void audioManager::initAudio(short bits, qint32 sample, short channels) {
     audio_data.clear();
     QBuffer audio_buffer(&audio_data);

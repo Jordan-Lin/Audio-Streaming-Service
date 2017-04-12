@@ -130,47 +130,6 @@ MainWindow::~MainWindow()
 }
 
 
-
-/*----------------------------------------------
- Test Buttons
-----------------------------------------------*/
-/*------------------------------------------------------------------------------
--- FUNCTION:
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Jordan Lin
---
--- PROGRAMMER: Jordan Lin
---
--- INTERFACE:
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES:
---
-------------------------------------------------------------------------------*/
-void MainWindow::on_B_AddItemTEST_clicked()
-{
-    /*
-    songVector.push_back("Song");
-    UpdateHandler::get()->emitUSV(songVector);
-    queueVector.push_back("Song");
-    UpdateHandler::get()->emitUQV(queueVector);
-    userVector.push_back("User");
-    UpdateHandler::get()->emitUUV(userVector);
-    */
-    //User u("UserTest", 123);
-    //UserManager::get().insert(123, u);
-    //UpdateHandler::get()->emitUUV();
-}
-/*----------------------------------------------
- Test Buttons
-----------------------------------------------*/
-
-
 /*----------------------------------------------
  Update Slots
 ----------------------------------------------*/
@@ -263,6 +222,33 @@ void MainWindow::updatedUList()
     UList->setStringList(userList);
     ui->LV_UserList->setModel(UList);
 }
+
+/*------------------------------------------------------------------------------
+-- FUNCTION:
+--
+-- DATE:    April 9th, 2017
+--
+-- DESIGNER: Jordan Lin
+--
+-- PROGRAMMER: Jordan Lin
+--
+-- INTERFACE:
+--
+-- PARAMETERS: N/A
+--
+-- RETURNS: N/A
+--
+-- NOTES:
+--
+------------------------------------------------------------------------------*/
+void MainWindow::uploadS() {
+    QString title = FileSelectDialogue::get()->getTitle();
+    QString album = FileSelectDialogue::get()->getAlbum();
+    QString artist = FileSelectDialogue::get()->getArtist();
+    QString filePath = FileSelectDialogue::get()->getFilePath();
+    client->sendUploadRequest(title, album, artist, filePath);
+}
+
 /*----------------------------------------------
  Update Slots
 ----------------------------------------------*/
@@ -448,6 +434,10 @@ void MainWindow::on_B_Upload_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Download_clicked()
 {
+    if (client != nullptr) {
+        int userSelection = ui->LV_SongList->currentIndex().row();
+        client->sendDownloadRequest(userSelection);
+    }
     // Get Selected item from SongList, send request with song info packet, run receive loop till all packets received.
     // Loop should happen in completion routine.
 }
@@ -472,6 +462,7 @@ void MainWindow::on_B_Download_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Request_clicked()
 {
+
     // Get Selected item from SongList
     // Create song request packet
     // Send some request packet.
@@ -518,14 +509,3 @@ void MainWindow::disableUI() {
 /*----------------------------------------------
  UI Manipulation
 ----------------------------------------------*/
-
-void MainWindow::on_pushButton_clicked()
-{
-    QByteArray data = audioManager::get().loadHeader(SongManager::get().at(1).getDir());
-    HeaderInfo info = audioManager::get().parseHeader(data);
-    data = audioManager::get().loadAudio(SongManager::get().at(1).getDir());
-    audioManager::get().appender(data);
-    std::thread audioThread(&audioManager::initAudio, &audioManager::get(), info.bitsPerSample, info.sampleRate, info.numberOfChannels);
-    audioThread.detach();
-    audioManager::get().playSong();
-}

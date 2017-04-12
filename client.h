@@ -15,7 +15,10 @@ public:
     ~Client();
     static void receiveRoutine(DWORD errCode, DWORD recvBytes, LPOVERLAPPED olap, DWORD flags);
     void parse(int recvBytes);
+    void sendDownloadRequest(int songId);
     void sendSongRequest(int songId);
+    void sendUploadRequest(QString title, QString album, QString artist, QString fileName);
+
 private:
     SongStreamReceiver *receiver;
     SOCKET sock;

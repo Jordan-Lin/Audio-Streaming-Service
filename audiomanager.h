@@ -23,6 +23,7 @@ public:
 
     QByteArray loadHeader(QString fileName);
     QByteArray loadAudio(QString fileName);
+    QByteArray loadSong(QString fileName);
     void playSong() {startSong = true;}
     void initAudio(short bits, qint32 sample, short channels);
     void appender(QByteArray);
