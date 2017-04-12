@@ -58,6 +58,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_LV_SongList_clicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 

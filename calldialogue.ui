@@ -43,24 +43,6 @@
         </item>
        </layout>
       </item>
-      <item>
-       <layout class="QVBoxLayout" name="Status">
-        <item>
-         <widget class="QLabel" name="CallStatus_2">
-          <property name="text">
-           <string>Status:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="L_CStatus">
-          <property name="text">
-           <string>Connecting...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
      </layout>
     </item>
     <item>

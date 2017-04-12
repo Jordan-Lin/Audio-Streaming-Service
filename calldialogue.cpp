@@ -43,6 +43,7 @@ CallDialogue::CallDialogue(QWidget *parent) :
     ui(new Ui::CallDialogue)
 {
     ui->setupUi(this);
+    init();
     initializeAudio();
     CallConnect();
 }
@@ -74,8 +75,7 @@ CallDialogue::~CallDialogue()
 
 void CallDialogue::CallConnect() {
     callSock = createSocket(SOCK_DGRAM);
-    const char *cStrServerIp = "192.168.04";
-    sockAdd = createAddress(inet_addr(cStrServerIp), htons(7003));
+    sockAdd = createAddress(ip, htons(7003));
     bindSocket(callSock, createAddress(INADDR_ANY, htons(7003)));
 
     //Audio output device
@@ -240,8 +240,6 @@ CallDialogue *CallDialogue::get()
 ------------------------------------------------------------------------------*/
 void CallDialogue::init() {
     ui->L_Contact->setText(QString::fromStdString(contact));
-    // WSA Start, create socket information, try connecting to user's socket
-    // Change status based on where the connection is being made, is completed etc.
 }
 
 /*------------------------------------------------------------------------------
