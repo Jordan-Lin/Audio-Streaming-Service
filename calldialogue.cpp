@@ -13,117 +13,87 @@ const int BufferSize = 14096;
 CallDialogue *CallDialogue::instance = nullptr;
 
 /*------------------------------------------------------------------------------
--- FUNCTION: CallDialogue::CallDialogue(QWidget *parent)
+-- FUNCTION:
 --
 -- DATE:    April 9th, 2017
 --
--- DESIGNER: Jordan Lin, Trista Huang
+-- DESIGNER: Jordan Lin
 --
--- PROGRAMMER: Jordan Lin, Trista Huang
+-- PROGRAMMER: Jordan Lin
 --
--- INTERFACE: CallDialogue::CallDialogue(QWidget *parent)
+-- INTERFACE:
 --
--- PARAMETERS: parent: QWidget from the parent
+-- PARAMETERS: N/A
 --
--- RETURNS: CallDialogue
+-- RETURNS: N/A
 --
--- NOTES: Constructor for CallDialogue
+-- NOTES:
 --
 ------------------------------------------------------------------------------*/
 CallDialogue::CallDialogue(QWidget *parent) :
     QDialog(parent),
-    m_Inputdevice(QAudioDeviceInfo::defaultInputDevice()),
-    m_Outputdevice(QAudioDeviceInfo::defaultOutputDevice()),
-    m_audioInput(0),
-    m_audioOutput(0),
-    m_input(0),
-    m_iVolume(0),
-    m_buffer(BufferSize, 0),
+    m_Inputdevice(QAudioDeviceInfo::defaultInputDevice())
+        ,   m_Outputdevice(QAudioDeviceInfo::defaultOutputDevice())
+        ,   m_audioInput(0)
+        ,   m_audioOutput(0)
+        ,   m_input(0)
+        ,   m_iVolume(0)
+        ,   m_buffer(BufferSize, 0)
+        ,
     ui(new Ui::CallDialogue)
 {
     ui->setupUi(this);
+    init();
     initializeAudio();
-    callConnect();
+    CallConnect();
 }
 
 /*------------------------------------------------------------------------------
--- FUNCTION: CallDialogue::~CallDialogue
+-- FUNCTION:
 --
 -- DATE:    April 9th, 2017
 --
--- DESIGNER: Jordan Lin, Trista Huang
+-- DESIGNER: Jordan Lin
 --
--- PROGRAMMER: Jordan Lin, Trista Huang
+-- PROGRAMMER: Jordan Lin
 --
--- INTERFACE: CallDialogue::~CallDialogue
+-- INTERFACE:
 --
 -- PARAMETERS: N/A
 --
 -- RETURNS: N/A
 --
--- NOTES: Destructor for CallDialogue
+-- NOTES:
 --
 ------------------------------------------------------------------------------*/
 CallDialogue::~CallDialogue()
-{    
+{
+    DebugWindow::get()->logd("Closing Call dialogue.\n");
+    receiving = false;
     delete ui;
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::callConnect()
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::callConnect()
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES: Sets sockets to connect between clients.
---          Also initiates audio devices to start receiving and sending microphone input.
---
-------------------------------------------------------------------------------*/
-void CallDialogue::callConnect() {
+void CallDialogue::CallConnect() {
     callSock = createSocket(SOCK_DGRAM);
-    const char *cStrServerIp = "192.168.04";
-    sockAdd = createAddress(inet_addr(cStrServerIp), htons(CALL_PORT));
-    bindSocket(callSock, createAddress(INADDR_ANY, htons(CALL_PORT)));
+    sockAdd = createAddress(ip, htons(7003));
+    bindSocket(callSock, createAddress(INADDR_ANY, htons(7003)));
 
     //Audio output device
-    m_output = m_audioOutput->start();
+    m_output= m_audioOutput->start();
+
     //Audio input device
     m_input = m_audioInput->start();
+    //connect readyRead signal to readMre slot.
+    //Call readmore when audio samples fill in inputbuffer
     connect(m_input, SIGNAL(readyRead()), SLOT(readMore()));
     receiving = true;
-
     std::thread callReceiveThread(&CallDialogue::receive, this);
     callReceiveThread.detach();
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::initializeAudio()
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::initializeAudio()
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES: Initializes audio devices and set format for the devices.
---
-------------------------------------------------------------------------------*/
-void CallDialogue::initializeAudio(){
+//Initialize audio
+void CallDialogue::initializeAudio()
+{
     m_format.setSampleRate(22050); //set frequency to 8000
     m_format.setChannelCount(1); //set channels to mono
     m_format.setSampleSize(16); //set sample sze to 16 bit
@@ -138,75 +108,27 @@ void CallDialogue::initializeAudio(){
     createAudioOutput();
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::createAudioOutput()
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::createAudioOutput()
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES: Create AudioOutput.
---
-------------------------------------------------------------------------------*/
-void CallDialogue::createAudioOutput(){
+void CallDialogue::createAudioOutput()
+{
     m_audioOutput = new QAudioOutput(m_Outputdevice, m_format, this);
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::createAudioInput()
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::createAudioInput()
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES: Create AudioInput object.
---
-------------------------------------------------------------------------------*/
-void CallDialogue::createAudioInput(){
+void CallDialogue::createAudioInput()
+{
     if (m_input != 0) {
         disconnect(m_input, 0, this, 0);
         m_input = 0;
     }
 
     m_audioInput = new QAudioInput(m_Inputdevice, m_format, this);
+
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::readMore()
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::readMore()
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES: Function to get input from microphone and send it over UDP socket.
---
-------------------------------------------------------------------------------*/
 void CallDialogue::readMore()
 {
+    int nBufSize = 4096;
+    char * buf = (char*)malloc(nBufSize) ;
+
     //Return if audio input is null
     if(!m_audioInput)
         return;
@@ -215,55 +137,39 @@ void CallDialogue::readMore()
     qint64 len = m_audioInput->bytesReady();
 
     //Limit sample size
-    if(len > 4096) len = 4096;
-
+    if(len > 4096)
+        len = 4096;
+    //Read sound samples from input device to buffer
     qint64 l = m_input->read(m_buffer.data(), len);
     if(l > 0)
     {
+        //Assign sound samples to short array
         short* resultingData = (short*)m_buffer.data();
         short *outdata=resultingData;
-        outdata[0] = resultingData [0];
+        outdata[ 0 ] = resultingData [ 0 ];
 
-        int index;
-        for ( index = 0; index < len; index++)
-        {
-            //Cange volume to each integer data in a sample
-            outdata[index] = ApplyVolumeToSample(outdata[index]);
-        }
+         int iIndex;
+         for ( iIndex=0; iIndex < len; iIndex++ )
+         {
+             //Cange volume to each integer data in a sample
+             outdata[ iIndex ] = ApplyVolumeToSample( outdata[ iIndex ]);
+         }
 
-        if (sendto(callSock, (char*)outdata, len, 0, (struct sockaddr *)&sockAdd, sizeof(sockAdd)) <= 0){
-            DebugWindow::get()->logd("Call: sendto failed.");
-        }
-        DebugWindow::get()->logd("Data Sent.\n");
+         //write modified sond sample to outputdevice for playback audio
+         if (sendto(callSock, (char*)outdata, len, 0, (struct sockaddr *)&sockAdd, sizeof( sockAdd )) <= 0){
+             DebugWindow::get()->logd("Call: sendto failed.");
+         }
+         DebugWindow::get()->logd("Data Sent.\n");
     }
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::receive()
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::receive()
---
--- PARAMETERS: N/A
---
--- RETURNS: N/A
---
--- NOTES: Receive from UDP socket. Starts on a new thread and run at start of call.
---          Outputs to the speaker as soon as its received.
---
-------------------------------------------------------------------------------*/
 void CallDialogue::receive(){
     int recvRet;
     char buf[4096];
+    struct sockaddr_in sin;
     int sin_len;
 
     sin_len = sizeof(sockAdd);
-
     while (receiving) {
         if ((recvRet = recvfrom (callSock, buf, 4096, 0, (struct sockaddr *)&sockAdd, &sin_len)) < 0){
             DebugWindow::get()->logd("Call: receive failed.");
@@ -274,52 +180,19 @@ void CallDialogue::receive(){
     }
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: int CallDialogue::ApplyVolumeToSample(short sample)
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: int CallDialogue::ApplyVolumeToSample(short sample)
---
--- PARAMETERS: sample: section of the sample input from microphone to be volume adjusted
---
--- RETURNS: int: returns the value with volume adjusted
---
--- NOTES: Adjusts volume of the sample input and returns it
---
-------------------------------------------------------------------------------*/
-int CallDialogue::ApplyVolumeToSample(short sample)
+int CallDialogue::ApplyVolumeToSample(short iSample)
 {
     //Calculate volume, Volume limited to  max 35535 and min -35535
-    return max(min(((sample * m_iVolume) / 50) ,35535), -35535);
+    return max(min(((iSample * m_iVolume) / 50) ,35535), -35535);
+
 }
 
-/*------------------------------------------------------------------------------
--- FUNCTION: void CallDialogue::on_horizontalSlider_valueChanged(int value)
---
--- DATE:    April 9th, 2017
---
--- DESIGNER: Trista Huang
---
--- PROGRAMMER: Trista Huang
---
--- INTERFACE: void CallDialogue::on_horizontalSlider_valueChanged(int value)
---
--- PARAMETERS: value: get the value of the slider to adjust the volume with
---
--- RETURNS: N/A
---
--- NOTES: Gets the value of the volume from UI and set the variable
---
-------------------------------------------------------------------------------*/
 void CallDialogue::on_horizontalSlider_valueChanged(int value)
 {
     m_iVolume = value;
 }
+
+
 
 /*------------------------------------------------------------------------------
 -- FUNCTION:
@@ -367,8 +240,6 @@ CallDialogue *CallDialogue::get()
 ------------------------------------------------------------------------------*/
 void CallDialogue::init() {
     ui->L_Contact->setText(QString::fromStdString(contact));
-    // WSA Start, create socket information, try connecting to user's socket
-    // Change status based on where the connection is being made, is completed etc.
 }
 
 /*------------------------------------------------------------------------------
@@ -435,15 +306,4 @@ void CallDialogue::reject()
     if (resBtn == QMessageBox::Yes) {
         QDialog::reject();
     }
-}
-
-void CallDialogue::on_B_HangUp_clicked()
-{
-    DebugWindow::get()->logd("Closing Call dialogue.\n");
-    receiving = false;
-    //Audio output device
-    m_input->close();
-    //Audio input device
-    m_output->close();
-    closesocket(callSock);
 }

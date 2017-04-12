@@ -7,6 +7,7 @@
 #include "audiomanager.h"
 #include "defines.h"
 #include "songqueue.h"
+#include "gettime.h"
 
 SongStreamer::SongStreamer() {
     sock = createSocket(SOCK_DGRAM);
@@ -36,14 +37,18 @@ void SongStreamer::initStream() {
         sendUDP(sock, wsaBuf, addr);
         totalBytes = data.size();
         bytesSent = 0;
+        Time begin = getCurrentTime();
         streamSong();
         DWORD waitResult = WAIT_IO_COMPLETION;
         while (waitResult == WAIT_IO_COMPLETION) {
             waitResult = WaitForSingleObjectEx(songSent, INFINITE, TRUE);
         }
+        Time end = getCurrentTime();
         HANDLE tempEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-        DebugWindow::get()->logd(QString(" TIME : ")  + itoq(1000 * audioManager::get().durationCalc(audioManager::get().loadHeader(song.getDir()))));
-        WaitForSingleObject(tempEvent, 1000 * audioManager::get().durationCalc(audioManager::get().loadHeader(song.getDir()))); //len of song
+        DebugWindow::get()->logd(QString(" TIME : ")  + itoq(1000 * audioManager::get().durationCalc(
+                audioManager::get().loadHeader(song.getDir()))));
+        WaitForSingleObject(tempEvent, 1000 * audioManager::get().durationCalc(
+                audioManager::get().loadHeader(song.getDir())) - getDuration(begin, end)); //len of song
         SongQueue::get().popSong();
     }
 }

@@ -36,11 +36,13 @@ public:
     void closeEvent(QCloseEvent *event);
     void reject();
 
-    const int getIndex() { return index; }
+//    const int getIndex() { return index; }
     const std::string getContact() { return contact; }
     const SOCKET getSocket() { return callSock; }
-    void setIndex(const int& i);
+//    void setIndex(const int& i);
+
     void setContact(const std::string& c) { contact = c; }
+    void setIp(const u_long i) { ip = i; }
     void setSocket(const SOCKET& s) { callSock = s; }
 
 //    void print(std::string p) { qDebug() << QString(p); }
@@ -68,10 +70,11 @@ private:
     // Singleton variable.
     static CallDialogue *instance;
 
-    // Variables
-        // NEED USER LIST IN THIS SECTION?
-    int index;              // UserList index
+    // Contact Variables
+    u_long ip;
     std::string contact;
+
+    // Socket Variables
     SOCKET callSock;
     char voiceDataBuff[MAX_BUFF_SIZE];
     sockaddr_in sockAdd;
@@ -87,6 +90,9 @@ private:
     QIODevice *m_output;
     QByteArray m_buffer;
     int m_iVolume;
+
+    // Thread handling
+    std::atomic<bool> receiving;
 };
 
 #endif // CALLDIALOGUE_H

@@ -122,7 +122,7 @@ void sendUDP(SOCKET sock, WSABUF& wsaBuf, struct sockaddr_in addr) {
 
 void joinMulticast(SOCKET sock) {
     struct ip_mreq multicastInterface;
-    multicastInterface.imr_multiaddr.s_addr = inet_addr("234.5.6.7");
+    multicastInterface.imr_multiaddr.s_addr = inet_addr("234.5.6.8");
     multicastInterface.imr_interface.s_addr = INADDR_ANY;
     int setSockOptRet = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
         (char *)&multicastInterface, sizeof(multicastInterface));
