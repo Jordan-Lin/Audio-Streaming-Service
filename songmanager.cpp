@@ -125,7 +125,7 @@ void SongManager::unlockedSendSongList() {
 --
 -- DESIGNER: Justen DePourcq, Trista Huang, Jordan Lin, Brody McCrone
 --
--- PROGRAMMER: Brody McCrone
+-- PROGRAMMER: Jordan Lin
 --
 -- INTERFACE: void SongManager::LoadSongList()
 --
@@ -138,21 +138,20 @@ void SongManager::unlockedSendSongList() {
 ------------------------------------------------------------------------------*/
 void SongManager::LoadSongList()
 {
-    QString testAudioFilePath = "C:\\Users\\Administrator\\Desktop\\CommAudioWavFiles";                    // Test, change to directory next to app
-
-    DebugWindow::get()->logd(testAudioFilePath);
-    QDir testAudioDirectory;                                                                    // Test, change to directory next to app
-    testAudioDirectory.setPath(testAudioFilePath);
+    QString songdirectory = QDir::currentPath() + QString("/Songs");
+    DebugWindow::get()->logd(songdirectory);
+    QDir audioDirectory;
+    audioDirectory.setPath(songdirectory);
     DebugWindow::get()->logd("Setting list filters");
     QStringList filters;
     filters << "*.wav";
-    testAudioDirectory.setNameFilters(filters);
-    testAudioDirectory.setSorting(QDir::Name);
+    audioDirectory.setNameFilters(filters);
+    audioDirectory.setSorting(QDir::Name);
 
     DebugWindow::get()->logd("Getting entryList");
-    QStringList files = testAudioDirectory.entryList();
+    QStringList files = audioDirectory.entryList();
     for (const QString& f : files) {
-        Song temp(SongManager::get().genId(), f, "Unknown", "Uknown", testAudioFilePath + "\\" + f);
+        Song temp(SongManager::get().genId(), f, "Unknown", "Uknown", songdirectory + "\\" + f);
         SongManager::get().addSong(temp);
     }
 }
