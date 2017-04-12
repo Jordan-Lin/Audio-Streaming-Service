@@ -452,6 +452,10 @@ void MainWindow::on_B_Upload_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Download_clicked()
 {
+    if (client != nullptr) {
+        int userSelection = ui->LV_SongList->currentIndex().row();
+        client->sendDownloadRequest(userSelection);
+    }
     // Get Selected item from SongList, send request with song info packet, run receive loop till all packets received.
     // Loop should happen in completion routine.
 }
@@ -476,6 +480,7 @@ void MainWindow::on_B_Download_clicked()
 ------------------------------------------------------------------------------*/
 void MainWindow::on_B_Request_clicked()
 {
+
     // Get Selected item from SongList
     // Create song request packet
     // Send some request packet.
@@ -524,14 +529,3 @@ void MainWindow::disableUI() {
 /*----------------------------------------------
  UI Manipulation
 ----------------------------------------------*/
-
-void MainWindow::on_pushButton_clicked()
-{
-    QByteArray data = audioManager::get().loadHeader(SongManager::get().at(1).getDir());
-    HeaderInfo info = audioManager::get().parseHeader(data);
-    data = audioManager::get().loadAudio(SongManager::get().at(1).getDir());
-    audioManager::get().appender(data);
-    std::thread audioThread(&audioManager::initAudio, &audioManager::get(), info.bitsPerSample, info.sampleRate, info.numberOfChannels);
-    audioThread.detach();
-    audioManager::get().playSong();
-}

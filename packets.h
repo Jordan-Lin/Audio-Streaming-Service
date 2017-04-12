@@ -27,7 +27,9 @@ enum PktIds {
     SONG_QUEUE,
     USER_ID,
     MUSIC_HEADER,
-    HEADER_INFO
+    HEADER_INFO,
+    DOWNLOAD_REQUEST,
+    DOWNLOAD
 };
 
 typedef struct {
@@ -109,5 +111,10 @@ typedef struct {
     char dataHeader[4];
     qint32 dataSize;
 } HeaderInfo;
+
+typedef struct {
+    PktIds pktId = PktIds::DOWNLOAD_REQUEST;
+    int songId;
+} DownloadRequest;
 
 #endif

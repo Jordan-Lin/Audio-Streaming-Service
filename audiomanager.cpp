@@ -27,6 +27,14 @@ QByteArray audioManager::loadAudio(QString fileName) {
     return song;
 }
 
+QByteArray audioManager::loadSong(QString fileName) {
+    QFile audio_file(fileName);
+    audio_file.open(QIODevice::ReadOnly);
+    QByteArray song = audio_file.readAll();
+    audio_file.close();
+    return song;
+}
+
 void audioManager::initAudio(short bits, qint32 sample, short channels) {
     //QByteArray data = audioManager::get().loadAudio(SongManager::get().at(1).getDir());
     audio_data.clear();

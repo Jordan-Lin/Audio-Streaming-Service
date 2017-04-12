@@ -27,6 +27,15 @@ SOCKET createSocket(int type) {
     return sock;
 }
 
+int recvTCP(SOCKET sock, WSABUF& wsaBuf) {
+    DWORD bytesRecv = 0;
+    DWORD flags = 0;
+    if (WSARecv(sock, &wsaBuf, 1, &bytesRecv, &flags, NULL, NULL) == SOCKET_ERROR) {
+        handleError(WSAGetLastError(), "recvTCP, WSARecv", ErrorType::RECV_TCP);
+    }
+    return bytesRecv;
+}
+
 SOCKET acceptConnection(SOCKET sock) {
     SOCKET acceptSock = WSAAccept(sock, NULL, NULL, NULL, NULL);
     if (acceptSock == INVALID_SOCKET) {
