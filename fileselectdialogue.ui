@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>471</width>
-    <height>160</height>
+    <width>472</width>
+    <height>129</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>130</y>
+     <x>360</x>
+     <y>70</y>
      <width>80</width>
      <height>16</height>
     </rect>
@@ -48,7 +48,7 @@
       <item>
        <widget class="QLabel" name="L_FilePath">
         <property name="text">
-         <string>&lt;FilePath&gt;</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -81,36 +81,7 @@
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>82</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="Image">
-    <item>
-     <widget class="QLabel" name="L_Image">
-      <property name="text">
-       <string>Image</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGraphicsView" name="GV_CoverArt"/>
-    </item>
-    <item>
-     <widget class="QPushButton" name="B_SelectImage">
-      <property name="text">
-       <string>Select Image</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>40</y>
-     <width>361</width>
+     <width>331</width>
      <height>82</height>
     </rect>
    </property>
