@@ -14,6 +14,7 @@
 #include "songmanager.h"
 #include "debugwindow.h"
 #include "songqueue.h"
+#include "audiomanager.h"
 
 #include <string>
 #include <ws2tcpip.h>
@@ -523,3 +524,14 @@ void MainWindow::disableUI() {
 /*----------------------------------------------
  UI Manipulation
 ----------------------------------------------*/
+
+void MainWindow::on_pushButton_clicked()
+{
+    QByteArray data = audioManager::get().loadHeader(SongManager::get().at(1).getDir());
+    HeaderInfo info = audioManager::get().parseHeader(data);
+    data = audioManager::get().loadAudio(SongManager::get().at(1).getDir());
+    audioManager::get().appender(data);
+    std::thread audioThread(&audioManager::initAudio, &audioManager::get(), info.bitsPerSample, info.sampleRate, info.numberOfChannels);
+    audioThread.detach();
+    audioManager::get().playSong();
+}

@@ -2,7 +2,6 @@
 #include "ui_calldialogue.h"
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <QUdpSocket>
 #include <thread>
 #include "debugwindow.h"
 #include "defines.h"

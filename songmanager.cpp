@@ -45,7 +45,7 @@ void SongManager::unlockedSendSongList() {
 
 void SongManager::LoadSongList()
 {
-    QString testAudioFilePath = "C:\\Users\\Jordan\\Desktop\\CommAudioWavFiles";                    // Test, change to directory next to app
+    QString testAudioFilePath = "C:\\Users\\Brody McCrone\\Desktop\\CommAudioWavFiles";                    // Test, change to directory next to app
 
     DebugWindow::get()->logd(testAudioFilePath);
     QDir testAudioDirectory;                                                                    // Test, change to directory next to app
@@ -59,7 +59,7 @@ void SongManager::LoadSongList()
     DebugWindow::get()->logd("Getting entryList");
     QStringList files = testAudioDirectory.entryList();
     for (const QString& f : files) {
-        Song temp(SongManager::get().genId(), f, "Unknown", testAudioFilePath + f);
+        Song temp(SongManager::get().genId(), f, "Unknown", "Uknown", testAudioFilePath + "\\" + f);
         SongManager::get().addSong(temp);
     }
 }

@@ -6,7 +6,7 @@
 #include <windows.h>
 #include "defines.h"
 
-#define AUDIO_BUFFER_SIZE 1024
+#define AUDIO_BUFFER_SIZE 10000
 #define SONG_TITLE_SIZE 256
 #define SONG_ARTIST_SIZE 256
 #define MAX_USERNAME 64
@@ -14,9 +14,10 @@
 #define MAX_ARTIST 64
 #define MAX_ALBUM 64
 
+#include "defines.h"
+
 enum PktIds {
     ARTWORK,
-    AUDIO,
     JOIN,
     SONG_INFO,
     USERS,
@@ -36,7 +37,7 @@ typedef struct {
 } Artwork;
 
 typedef struct {
-    PktIds pktId = PktIds::AUDIO;
+    int pktId = AUDIO;
     int len;
     char buffer[AUDIO_BUFFER_SIZE];
 } Audio;
@@ -91,10 +92,6 @@ typedef struct {
     int id;
 } UserId;
 
-typedef struct {
-    PktIds pktId = PktIds::MUSIC_HEADER;
-    char data[HEADER_SIZE];
-} HeaderStream;
 
 typedef struct {
     int pkitId = AUDIO_FORMAT_ID;
@@ -111,6 +108,6 @@ typedef struct {
     short bitsPerSample;
     char dataHeader[4];
     qint32 dataSize;
-}HeaderInfo;
+} HeaderInfo;
 
 #endif

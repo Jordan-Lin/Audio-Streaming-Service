@@ -4,32 +4,48 @@
 #include "debugwindow.h"
 #include <QFile>
 #include <ws2tcpip.h>
+#include "audiomanager.h"
+#include "defines.h"
+#include "songqueue.h"
 
 SongStreamer::SongStreamer() {
     sock = createSocket(SOCK_DGRAM);
     bindSocket(sock, createAddress(htonl(INADDR_ANY), 0));
-    addr = createAddress(inet_addr("127.0.0.1"), htons(5150));
+    addr = createAddress(inet_addr("127.0.0.1"), htons(6555));
 
-    joinMulticast(sock);
-    traverseMultiple(sock);
-    disableLoopback(sock);
+    //joinMulticast(sock);
+    //traverseMultiple(sock);
+    //disableLoopback(sock);
 }
 
-void SongStreamer::initStream(QString fileName) {
+void SongStreamer::initStream() {
     songSent = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-    QFile file(fileName);
-    file.open(QIODevice::ReadOnly);
-    if (file.isOpen()) {
-        DebugWindow::get()->logd("FILE IS OPEN");
-    } else {
-        DebugWindow::get()->logd(QString("FILE IS NOT OPEN"));
+    while (true) {
+        if (SongQueue::get().size() == 0) {
+            continue;
+        }
+
+        Song song = SongQueue::get().front();
+        data = audioManager::get().loadAudio(song.getDir());
+
+        HeaderInfo info = audioManager::get().parseHeader(audioManager::get().loadHeader(song.getDir()));
+        WSABUF wsaBuf;
+        wsaBuf.buf = reinterpret_cast<char *>(&info);
+        wsaBuf.len = sizeof(HeaderInfo);
+        sendUDP(sock, wsaBuf, addr);
+        totalBytes = data.size();
+        bytesSent = 0;
+        streamSong();
+        DWORD waitResult = WAIT_IO_COMPLETION;
+        while (waitResult == WAIT_IO_COMPLETION) {
+            waitResult = WaitForSingleObjectEx(songSent, INFINITE, TRUE);
+        }
+        HANDLE tempEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+        DebugWindow::get()->logd(QString(" TIME : ")  + itoq(1000 * audioManager::get().durationCalc(audioManager::get().loadHeader(song.getDir()))));
+        WaitForSingleObject(tempEvent, 1000 * audioManager::get().durationCalc(audioManager::get().loadHeader(song.getDir()))); //len of song
+        SongQueue::get().popSong();
     }
-    data = file.readAll();
-    totalBytes = data.size();
-    bytesSent = 0;
-    streamSong();
-    WaitForSingleObjectEx(songSent, INFINITE, TRUE);
 }
 
 void CALLBACK SongStreamer::streamSongRoutine(DWORD err, DWORD bytesRecv, LPWSAOVERLAPPED overlapped, DWORD flags) {

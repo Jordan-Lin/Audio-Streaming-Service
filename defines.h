@@ -8,5 +8,6 @@
 #define LARGE_BUFFER_SIZE USHRT_MAX
 #define HEADER_SIZE 44
 #define AUDIO_FORMAT_ID 68653
+#define AUDIO 23483
 
 #endif

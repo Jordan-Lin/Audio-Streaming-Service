@@ -5,6 +5,7 @@
 #include <windows.h>
 #include "defines.h"
 #include <atomic>
+#include "songstreamer.h"
 
 enum ServerState {
     NOT_RUNNING,
@@ -17,6 +18,8 @@ public:
     Server();
     ServerState getState() {return state;}
 private:
+    SongStreamer *streamer;
+
     SOCKET listenSock;
     std::atomic<ServerState> state{ServerState::NOT_RUNNING};
 

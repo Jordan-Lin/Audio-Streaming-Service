@@ -18,7 +18,8 @@ enum ErrorType {
     SEND_TCP_OLAP,
     SEND_TCP,
     ACCEPT_CONNECTION,
-    CONNECT_SOCKET
+    CONNECT_SOCKET,
+    SEND_UDP
 };
 
 typedef void (*Routine)(DWORD, DWORD, LPWSAOVERLAPPED, DWORD);
@@ -27,6 +28,7 @@ void printError(const char *msg, int errCode);
 void startup();
 SOCKET createSocket(int type);
 SOCKET acceptConnection(SOCKET sock);
+void sendUDP(SOCKET sock, WSABUF& wsaBuf, struct sockaddr_in addr);
 bool connectSocket(SOCKET sock, struct sockaddr_in addr);
 void sendTCP(SOCKET sock, WSABUF& wsaBuf);
 void bindSocket(SOCKET sock, struct sockaddr_in addr);
