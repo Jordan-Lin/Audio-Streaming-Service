@@ -11,6 +11,7 @@
 #include <QAudioOutput>
 #include <QEventLoop>
 #include <thread>
+#include "packets.h"
 
 
 class audioManager
@@ -24,6 +25,7 @@ public:
     QByteArray loadAudio(QString fileName);
     void playAudio(short bits, qint32 sample, short channels, QByteArray audio);
     void appender(QByteArray);
+    void audioManager::parseHeader(QByteArray headerInfo);
 private:
     static audioManager instance;
 };

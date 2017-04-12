@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <winsock2.h>
 #include <windows.h>
+#include "defines.h"
 
 #define AUDIO_BUFFER_SIZE 1024
 #define SONG_TITLE_SIZE 256
@@ -24,7 +25,8 @@ enum PktIds {
     SONG_REQUEST,
     SONG_QUEUE,
     USER_ID,
-    MUSIC_HEADER
+    MUSIC_HEADER,
+    HEADER_INFO
 };
 
 typedef struct {
@@ -91,6 +93,11 @@ typedef struct {
 
 typedef struct {
     PktIds pktId = PktIds::MUSIC_HEADER;
+    char data[HEADER_SIZE];
+} HeaderStream;
+
+typedef struct {
+    int pkitId = AUDIO_FORMAT_ID;
     char fileType[4];
     qint32 fileSize;
     char waveName[4];
@@ -99,11 +106,11 @@ typedef struct {
     short fmtType;
     short numberOfChannels;
     qint32 sampleRate;
-    qint32 sampleMultiply;
-    short bitsMultiply;
+    qint32 sampleMulti;
+    short bitsMulti;
     short bitsPerSample;
     char dataHeader[4];
     qint32 dataSize;
-} Header;
+}HeaderInfo;
 
 #endif
