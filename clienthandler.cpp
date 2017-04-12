@@ -109,8 +109,9 @@ void ClientHandler::parse(int recvBytes) {
         case PktIds::UPLOAD:
             {
                 Upload *upload = reinterpret_cast<Upload *>(tempBuffer);
-                Song song(SongManager::get().genId(), upload->title, upload->artist, upload->album);
                 QByteArray data;
+                QString audioDir(QString(upload->title) + ".wav");
+                Song song(SongManager::get().genId(), upload->title, upload->artist, upload->album, audioDir);
                 int len = upload->len;
                 while (len) {
                     wsaBuf.buf = buffer;
@@ -122,7 +123,7 @@ void ClientHandler::parse(int recvBytes) {
                     data.append(wsaBuf.buf, ret);
                     len -= ret;
                 }
-                QFile file(upload->title);
+                QFile file(audioDir);
                 if (file.open(QIODevice::ReadWrite)) {
                     file.write(data);
                 }
